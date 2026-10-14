@@ -9,8 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.64.6",
-    "@tailwindcss/oxide-win32-x64-msvc": "^4.3.3",
     "clsx": "^2.1.1",
     "firebase": "^12.14.0",
     "lucide-react": "^0.546.0",
