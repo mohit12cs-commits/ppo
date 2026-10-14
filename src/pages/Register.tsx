@@ -24,7 +24,8 @@ import {
   Award,
   Headset,
   IndianRupee,
-  Clock
+  Clock,
+  CreditCard
 } from 'lucide-react';
 import {
   DEGREES,

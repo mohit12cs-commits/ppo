@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
@@ -27,6 +27,8 @@ export default function Payment() {
 
   const [fee, setFee] = useState<number>(1000);
   const [loadingFee, setLoadingFee] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const emailParam = searchParams.get('email');
   const [unauthedStudent, setUnauthedStudent] = useState<any>(null);
