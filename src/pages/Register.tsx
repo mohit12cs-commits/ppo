@@ -67,6 +67,7 @@ export const Register: React.FC = () => {
   });
 
   const [collegePrice, setCollegePrice] = useState<number>(1000);
+  const [demoAutoPay, setDemoAutoPay] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -206,9 +207,13 @@ export const Register: React.FC = () => {
         industrialRegNo: formData.industrialRegNo.trim(),
         internshipDomain: formData.internshipDomain,
         internshipMode: formData.internshipMode,
-        isPaid: false,
-        paymentStatus: 'pending',
+        isPaid: demoAutoPay,
+        hasPaid: demoAutoPay,
+        paymentStatus: demoAutoPay ? 'success' : 'pending',
         paymentAmount: collegePrice,
+        paymentVerifiedAt: demoAutoPay ? new Date().toISOString() : undefined,
+        razorpayPaymentId: demoAutoPay ? `pay_demo_${Date.now()}` : undefined,
+        razorpayOrderId: demoAutoPay ? `order_demo_${Date.now()}` : undefined,
         registrationDate: new Date().toISOString(),
         role: 'student',
         learningHours: 0,
@@ -216,6 +221,28 @@ export const Register: React.FC = () => {
       };
 
       await setDoc(userRef, newProfile);
+
+      if (demoAutoPay && newProfile.razorpayPaymentId) {
+        // Record demo payment transaction in 'payments'
+        await setDoc(doc(db, 'payments', newProfile.razorpayPaymentId), {
+          id: newProfile.razorpayPaymentId,
+          userId: cred.user.uid,
+          studentName: newProfile.fullName,
+          studentEmail: newProfile.email,
+          college: newProfile.college,
+          razorpayOrderId: newProfile.razorpayOrderId,
+          razorpayPaymentId: newProfile.razorpayPaymentId,
+          amount: collegePrice,
+          amountPaise: collegePrice * 100,
+          currency: 'INR',
+          status: 'success',
+          timestamp: new Date().toISOString()
+        });
+
+        // Redirect directly to Student Dashboard
+        navigate('/dashboard');
+        return;
+      }
 
       // Redirect directly to Payment page
       navigate('/payment');
@@ -628,6 +655,25 @@ export const Register: React.FC = () => {
               </span>
               <span className="text-xs text-slate-400 ml-1">one-time</span>
             </div>
+          </div>
+
+          {/* DEMO / TEST PAYMENT AUTO-APPROVE OPTION */}
+          <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="demoPayCheckbox"
+                checked={demoAutoPay}
+                onChange={e => setDemoAutoPay(e.target.checked)}
+                className="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-700 cursor-pointer"
+              />
+              <label htmlFor="demoPayCheckbox" className="text-xs font-semibold text-indigo-300 light:text-indigo-800 cursor-pointer">
+                Auto-approve with Demo Payment (Instant Entry to Student Dashboard)
+              </label>
+            </div>
+            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold uppercase tracking-wider">
+              Sandbox
+            </span>
           </div>
 
           <div className="flex items-start gap-2.5">

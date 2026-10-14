@@ -153,6 +153,57 @@ export default function Payment() {
     });
   };
 
+  const handleInstantDemoPayment = async () => {
+    if (!user || !profile) return;
+    setError(null);
+    setProcessing(true);
+
+    try {
+      const paymentId = `pay_mock_${Date.now()}`;
+      const orderId = `order_mock_${Date.now()}`;
+      const nowIso = new Date().toISOString();
+      const amountInPaise = fee * 100;
+
+      // 1. Update user profile
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        isPaid: true,
+        hasPaid: true,
+        paymentStatus: 'success',
+        paymentAmount: fee,
+        paymentVerifiedAt: nowIso,
+        razorpayPaymentId: paymentId,
+        razorpayOrderId: orderId,
+        updatedAt: nowIso
+      });
+
+      // 2. Create payment record in 'payments'
+      const payDocRef = doc(db, 'payments', paymentId);
+      await setDoc(payDocRef, {
+        id: paymentId,
+        userId: user.uid,
+        studentName: profile.fullName || '',
+        studentEmail: profile.email || '',
+        college: profile.college || '',
+        razorpayOrderId: orderId,
+        razorpayPaymentId: paymentId,
+        amount: fee,
+        amountPaise: amountInPaise,
+        currency: 'INR',
+        status: 'success',
+        timestamp: nowIso
+      });
+
+      // 3. Refresh context and navigate to student dashboard
+      await refreshProfile();
+      navigate('/dashboard', { replace: true });
+    } catch (err: any) {
+      console.error('Instant payment error:', err);
+      setError('Error approving demo payment: ' + (err.message || 'Unknown error'));
+      setProcessing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen pt-28 pb-16 px-4 bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
       <div className="absolute top-1/4 -right-32 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
@@ -280,6 +331,33 @@ export default function Payment() {
                 <CreditCard className="w-5 h-5" />
                 <span>Pay ₹{fee.toLocaleString('en-IN')} via Razorpay</span>
                 <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </button>
+
+          {/* Sandbox / Instant Demo Mode Approval */}
+          <div className="relative my-4 flex items-center justify-center">
+            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
+            <span className="bg-white dark:bg-slate-900 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
+              OR Instant Demo Mode
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleInstantDemoPayment}
+            disabled={processing || loadingFee}
+            className="w-full py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
+          >
+            {processing ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Simulating Payment & Direct Login...</span>
+              </div>
+            ) : (
+              <>
+                <CheckCircle2 className="w-5 h-5" />
+                <span>Pay via Demo Mode (Instant Approval & Enter Dashboard)</span>
               </>
             )}
           </button>

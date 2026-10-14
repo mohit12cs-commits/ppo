@@ -212,9 +212,27 @@ export default function Login() {
             </div>
 
             {activeTab === 'admin' && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                <span>Default administrator credential is configured in the environment.</span>
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-300 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <ShieldCheck className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                    <span>Admin Credentials:</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIdentifier('admin@internmitra.com');
+                      setPassword('Mohit@123');
+                    }}
+                    className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                  >
+                    Auto-Fill Credentials
+                  </button>
+                </div>
+                <div className="text-[11px] text-slate-600 dark:text-slate-300 font-mono bg-white/60 dark:bg-slate-800/60 p-2 rounded-lg">
+                  <p>Email: admin@internmitra.com</p>
+                  <p>Password: Mohit@123</p>
+                </div>
               </div>
             )}
 
