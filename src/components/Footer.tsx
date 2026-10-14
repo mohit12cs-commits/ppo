@@ -1,107 +1,160 @@
 import React from 'react';
-import { Award, GraduationCap, Mail, MapPin, Phone, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  GraduationCap,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  ShieldCheck,
+  Award,
+  ArrowUpRight,
+  Heart
+} from 'lucide-react';
 
-interface FooterProps {
-  onOpenApply: () => void;
-  onOpenVerify: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenApply, onOpenVerify }) => {
+export const Footer: React.FC = () => {
   return (
-    <footer className="bg-slate-950 border-t border-slate-900 pt-16 pb-12 text-slate-400 text-sm">
+    <footer className="bg-slate-950 light:bg-slate-900 text-slate-300 border-t border-slate-800/80 light:border-slate-800 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
-          {/* Col 1 & 2: Brand & Accreditation */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+          {/* Brand Info */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+            <Link to="/" className="inline-flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-600/25">
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-white font-heading">
-                PPO<span className="text-indigo-400">Intern</span>
-              </span>
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-              India's premier certified industry internship and pre-placement offer acceleration platform. Connecting students with real production engineering, verifiable credentials, and high-growth recruiters.
+              <div>
+                <span className="text-xl font-bold tracking-tight text-white font-heading">
+                  PPO<span className="text-emerald-400">Intern</span>
+                </span>
+                <span className="ml-2 text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  Certified
+                </span>
+              </div>
+            </Link>
+            <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
+              Empowering students across India with accredited 120-hour internships, industry-aligned capstone modules, and verifiable credentials compliant with NEP-2020 & AICTE guidelines.
             </p>
-            <div className="flex flex-wrap items-center gap-2 pt-2">
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                ISO 9001:2015 Quality Certified
-              </span>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300 flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5 text-amber-400" />
-                MSME Registered Enterprise
+            <div className="flex items-center gap-2 pt-2">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs text-slate-400 font-medium">
+                Admissions Open for 2026 Academic Cohorts
               </span>
             </div>
           </div>
 
-          {/* Col 3: Tracks */}
+          {/* Quick Navigation Links */}
           <div>
-            <h4 className="text-white font-bold text-sm mb-4 font-heading">Top Internship Tracks</h4>
-            <ul className="space-y-2 text-xs">
-              <li><a href="#tracks" className="hover:text-white transition-colors">Full-Stack Web Engineering</a></li>
-              <li><a href="#tracks" className="hover:text-white transition-colors">Generative AI & LLMs</a></li>
-              <li><a href="#tracks" className="hover:text-white transition-colors">Cloud & DevOps Engineering</a></li>
-              <li><a href="#tracks" className="hover:text-white transition-colors">Cyber Security & Ethical Hacking</a></li>
-              <li><a href="#tracks" className="hover:text-white transition-colors">Data Science & Analytics</a></li>
-              <li><a href="#tracks" className="hover:text-white transition-colors">Cross-Platform Mobile Dev</a></li>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 font-heading">
+              Portal Pages
+            </h3>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link to="/" className="hover:text-emerald-400 transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-emerald-400 transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/programs" className="hover:text-emerald-400 transition-colors">
+                  Internship Programs
+                </Link>
+              </li>
+              <li>
+                <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-emerald-400 transition-colors">
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Col 4: Quick Portals */}
+          {/* Program Domains */}
           <div>
-            <h4 className="text-white font-bold text-sm mb-4 font-heading">Candidate Services</h4>
-            <ul className="space-y-2 text-xs">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 font-heading">
+              Key Domains
+            </h3>
+            <ul className="space-y-2.5 text-sm text-slate-400">
               <li>
-                <button onClick={onOpenApply} className="hover:text-white transition-colors text-left">
-                  Apply for Internship
-                </button>
+                <Link to="/programs" className="hover:text-white transition-colors">
+                  Web & Full Stack
+                </Link>
               </li>
               <li>
-                <button onClick={onOpenVerify} className="hover:text-indigo-400 transition-colors text-left flex items-center gap-1 text-emerald-400">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Verify Certificate
-                </button>
+                <Link to="/programs" className="hover:text-white transition-colors">
+                  Artificial Intelligence & ML
+                </Link>
               </li>
-              <li><a href="#why-us" className="hover:text-white transition-colors">Curriculum Standard</a></li>
-              <li><a href="#partners" className="hover:text-white transition-colors">Campus MoU Inquiries</a></li>
-              <li><a href="#faq" className="hover:text-white transition-colors">Help & FAQ</a></li>
+              <li>
+                <Link to="/programs" className="hover:text-white transition-colors">
+                  Cyber Security & Defense
+                </Link>
+              </li>
+              <li>
+                <Link to="/programs" className="hover:text-white transition-colors">
+                  Data Science & Analytics
+                </Link>
+              </li>
+              <li>
+                <Link to="/programs" className="hover:text-white transition-colors">
+                  Cloud & DevOps
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Col 5: Contact & Support */}
+          {/* Support & Contact Details */}
           <div>
-            <h4 className="text-white font-bold text-sm mb-4 font-heading">Candidate Support</h4>
-            <ul className="space-y-3 text-xs">
-              <li className="flex items-start gap-2">
-                <Mail className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-4 font-heading">
+              Support Desk
+            </h3>
+            <ul className="space-y-3 text-xs text-slate-400">
+              <li className="flex items-start gap-2.5">
+                <Phone className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>+91 96939 21517</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Mail className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <span>support@ppointern.com</span>
               </li>
-              <li className="flex items-start gap-2">
-                <Phone className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                <span>+91 98765 43210 (Mon-Sat, 10am-6pm)</span>
+              <li className="flex items-start gap-2.5">
+                <Clock className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>Mon – Sat: 10:00 AM – 7:00 PM IST</span>
               </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                <span>Technology Hub, Phase II, New Delhi / Jaipur, India</span>
+              <li className="flex items-start gap-2.5">
+                <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>Tech Hub Park, Sector 62, Noida, UP</span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div>
-            &copy; {new Date().getFullYear()} PPO Intern Platform. All rights reserved.
-          </div>
+        {/* Legal and Disclaimer Bar */}
+        <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <p>© {new Date().getFullYear()} PPO Intern Portal. All rights reserved. NEP-2020 Aligned.</p>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Enrollment</a>
-            <a href="#" className="hover:text-white transition-colors">Security & Verification</a>
+            <Link to="/privacy" className="hover:text-slate-300 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-slate-300 transition-colors">
+              Terms of Service
+            </Link>
+            <Link to="/contact" className="hover:text-slate-300 transition-colors">
+              Help Desk
+            </Link>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+
+export default Footer;
