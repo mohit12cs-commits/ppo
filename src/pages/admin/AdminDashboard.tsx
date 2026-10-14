@@ -96,10 +96,10 @@ export default function AdminDashboard() {
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             Administrator Overview
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Real-time analytics and management control for NEP-2020 Internship Batches
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
           </Link>
           <Link
             to="/admin/master-data"
-            className="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition"
+            className="px-3.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition"
           >
             <Database className="w-4 h-4" />
             <span>Colleges & Fees</span>
@@ -126,96 +126,96 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         
         {/* Total Students */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Total Students
             </span>
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <Users className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 dark:text-white">
+          <p className="text-2xl font-extrabold text-slate-900">
             {loading ? '...' : stats.totalStudents}
           </p>
           <span className="text-[10px] text-slate-400 mt-1 block">Registered in database</span>
         </div>
 
         {/* Paid Students */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Verified Paid
             </span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
+          <p className="text-2xl font-extrabold text-emerald-600">
             {loading ? '...' : stats.paidStudents}
           </p>
           <span className="text-[10px] text-slate-400 mt-1 block">Fee confirmed</span>
         </div>
 
         {/* Revenue Collected */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Total Revenue
             </span>
-            <div className="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center">
               <IndianRupee className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 dark:text-white">
+          <p className="text-2xl font-extrabold text-slate-900">
             ₹{loading ? '...' : stats.totalRevenue.toLocaleString('en-IN')}
           </p>
           <span className="text-[10px] text-slate-400 mt-1 block">Net collected</span>
         </div>
 
         {/* Pending Payments */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Pending
             </span>
-            <div className="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
               <Clock className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400">
+          <p className="text-2xl font-extrabold text-amber-600">
             {loading ? '...' : stats.pendingPayments}
           </p>
           <span className="text-[10px] text-slate-400 mt-1 block">Awaiting fee</span>
         </div>
 
         {/* Total Inquiries */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Inquiries
             </span>
-            <div className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
               <Mail className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 dark:text-white">
+          <p className="text-2xl font-extrabold text-slate-900">
             {loading ? '...' : stats.totalInquiries}
           </p>
           <span className="text-[10px] text-slate-400 mt-1 block">Contact submissions</span>
         </div>
 
         {/* Affiliated Colleges */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
               Colleges
             </span>
-            <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 dark:text-white">
+          <p className="text-2xl font-extrabold text-slate-900">
             {loading ? '...' : (stats.totalColleges || 35)}
           </p>
           <span className="text-[10px] text-slate-400 mt-1 block">Active institutions</span>
@@ -226,15 +226,15 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Recent Registrations Table */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Users className="w-4 h-4 text-indigo-500" />
               Recent Student Registrations
             </h3>
             <Link
               to="/admin/students"
-              className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline flex items-center gap-0.5"
+              className="text-xs text-indigo-600 font-semibold hover:underline flex items-center gap-0.5"
             >
               <span>View All</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -244,13 +244,13 @@ export default function AdminDashboard() {
           {recentStudents.length === 0 ? (
             <p className="text-xs text-slate-400 py-6 text-center">No students registered yet</p>
           ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-slate-100">
               {recentStudents.map((st) => {
                 const paid = st.isPaid || st.hasPaid || st.paymentStatus === 'success';
                 return (
                   <div key={st.uid} className="py-3 flex items-center justify-between text-xs">
                     <div>
-                      <p className="font-bold text-slate-900 dark:text-white">
+                      <p className="font-bold text-slate-900">
                         {st.fullName || 'Student'}
                       </p>
                       <p className="text-slate-400 text-[11px]">
@@ -259,11 +259,11 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       {paid ? (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
                           Paid
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200">
                           Pending
                         </span>
                       )}
@@ -276,15 +276,15 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Transactions Table */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <CreditCard className="w-4 h-4 text-cyan-500" />
               Recent Payment Transactions
             </h3>
             <Link
               to="/admin/payments"
-              className="text-xs text-cyan-600 dark:text-cyan-400 font-semibold hover:underline flex items-center gap-0.5"
+              className="text-xs text-cyan-600 font-semibold hover:underline flex items-center gap-0.5"
             >
               <span>View All</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -294,11 +294,11 @@ export default function AdminDashboard() {
           {recentPayments.length === 0 ? (
             <p className="text-xs text-slate-400 py-6 text-center">No payment transactions yet</p>
           ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-slate-100">
               {recentPayments.map((p) => (
                 <div key={p.id} className="py-3 flex items-center justify-between text-xs">
                   <div>
-                    <p className="font-bold text-slate-900 dark:text-white">
+                    <p className="font-bold text-slate-900">
                       {p.studentName || 'Student'}
                     </p>
                     <p className="text-slate-400 text-[11px]">
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-emerald-600 dark:text-emerald-400">
+                    <p className="font-bold text-emerald-600">
                       ₹{p.amount.toLocaleString('en-IN')}
                     </p>
                     <p className="text-[10px] text-slate-400">

@@ -34,7 +34,7 @@ import SiteSettings from './pages/admin/SiteSettings';
 // Public layout wrapper with sticky Navbar and Footer
 const PublicLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-colors">
       <Navbar />
       <main className="flex-1">
         <Outlet />
@@ -61,14 +61,7 @@ export function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
-              <Route
-                path="/payment"
-                element={
-                  <ProtectedRoute>
-                    <Payment />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/payment" element={<Payment />} />
               <Route
                 path="/dashboard"
                 element={

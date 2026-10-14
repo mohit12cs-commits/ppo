@@ -16,8 +16,10 @@ export interface RazorpayOptions {
     contact?: string;
   };
   notes?: Record<string, string>;
+  theme?: { color?: string };
   onSuccess: (response: { razorpay_payment_id: string; razorpay_order_id?: string; razorpay_signature?: string }) => void;
   onFailure?: (error: any) => void;
+  onError?: (error: any) => void;
 }
 
 export const openRazorpayCheckout = (options: RazorpayOptions) => {

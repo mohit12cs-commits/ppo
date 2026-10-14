@@ -113,16 +113,52 @@ export async function getTemplateForStudent(profile: Partial<UserProfile>): Prom
   return null;
 }
 
+type TextSegment = {
+  text: string;
+  bold?: boolean;
+};
+
+function renderRichText(
+  pdf: jsPDF,
+  segments: TextSegment[],
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  fontSize: number
+) {
+  let cursorX = x;
+  let cursorY = y;
+
+  pdf.setFontSize(fontSize);
+  segments.forEach((segment) => {
+    const words = segment.text.split(/(\s+)/).filter(Boolean);
+    pdf.setFont('Helvetica', segment.bold ? 'bold' : 'normal');
+
+    words.forEach((word) => {
+      const wordWidth = pdf.getTextWidth(word);
+      if (cursorX > x && cursorX + wordWidth > x + maxWidth) {
+        cursorX = x;
+        cursorY += lineHeight;
+      }
+      pdf.text(word, cursorX, cursorY);
+      cursorX += wordWidth;
+    });
+  });
+
+  return cursorY + lineHeight;
+}
+
 export async function createOfferLetterPdf(
   profile: Partial<UserProfile>,
   letterNumber: string,
   template?: OfferLetterTemplate | null
 ): Promise<jsPDF> {
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const W = 210, H = 297, ML = 14;
+  const W = 210, H = 297, ML = 12;
 
   const headerImgUrl = template?.headerImageUrl || '/images/offer_letter_header.png';
-  const footerImgUrl = template?.footerImageUrl || '/images/offer_letter_footer.png';
+  const footerImgUrl = template?.footerImageUrl || '/images/document_footer.png';
   const watermarkImgUrl = template?.watermarkUrl || '';
 
   const [headerImg, footerImg, watermarkImg] = await Promise.all([
@@ -135,10 +171,9 @@ export async function createOfferLetterPdf(
   const registrationNumber = profile.universityRoll || profile.universityRollNo || 'N/A';
   const rollNumber = profile.universityRollNo || profile.universityRoll || 'N/A';
   const college = profile.college || 'Authorized Institution';
-  const deptSemester = `${profile.department || profile.degree || 'Engineering'} - ${profile.semester || 'Current Semester'}`;
+  const deptSemester = `${profile.department || profile.degree || 'Engineering'} - ${profile.semester || '5th Semester'}`;
   const domain = profile.internshipDomain || 'Software & Industry Internship';
-  const internshipMode = profile.internshipMode || 'Online / Hybrid (College Approved)';
-  const companyName = template?.companyName || 'Internship & Research Organization';
+  const internshipMode = profile.internshipMode || 'Online';
 
   const formatDate = (iso: string | undefined) => {
     if (!iso) {
@@ -150,37 +185,24 @@ export async function createOfferLetterPdf(
   };
   const letterDate = formatDate(profile.registrationDate);
 
-  // 1. Draw Header Image if present
-  let currentY = 15;
+  const headerH = (206 / 808) * W;
+  const footerH = (322 / 1002) * W;
+
+  // 1. Header Banner Image
   if (headerImg) {
     try {
-      const headerH = (206 / 808) * W;
-      pdf.addImage(headerImg, 'PNG', 0, 0, W, headerH);
-      currentY = headerH + 6;
-    } catch {
-      currentY = 20;
+      pdf.addImage(headerImg, 'PNG', -0.6, 0, W + 1.2, headerH);
+    } catch (e) {
+      console.warn('Failed to render header image:', e);
     }
-  } else {
-    // Elegant text header fallback
-    pdf.setFont('Helvetica', 'bold');
-    pdf.setFontSize(16);
-    pdf.setTextColor(30, 41, 59);
-    pdf.text(companyName.toUpperCase(), W / 2, 22, { align: 'center' });
-    pdf.setFontSize(9);
-    pdf.setFont('Helvetica', 'normal');
-    pdf.setTextColor(100, 116, 139);
-    pdf.text('In alignment with NEP-2020 & UGC Internship Framework', W / 2, 28, { align: 'center' });
-    pdf.setDrawColor(226, 232, 240);
-    pdf.line(ML, 32, W - ML, 32);
-    currentY = 38;
   }
 
   // 2. Watermark
   if (watermarkImg) {
     try {
-      const wmSize = 130;
+      const wmSize = 140;
       const wmX = (W - wmSize) / 2;
-      const wmY = (H - wmSize) / 2;
+      const wmY = headerH + 20;
       (pdf as any).saveGraphicsState();
       (pdf as any).setGState((pdf as any).GState({ opacity: 0.08 }));
       pdf.addImage(watermarkImg, 'JPEG', wmX, wmY, wmSize, wmSize);
@@ -190,139 +212,111 @@ export async function createOfferLetterPdf(
     }
   }
 
-  // 3. Ref and Date line
-  pdf.setFont('Helvetica', 'bold');
-  pdf.setFontSize(9.5);
-  pdf.setTextColor(30, 41, 59);
-  pdf.text('Ref No:', ML, currentY);
-  pdf.setFont('Helvetica', 'normal');
-  pdf.text(`INT/2026/OFFER/${letterNumber}`, ML + 16, currentY);
+  const x = ML;
+  let y = headerH + 3;
+  pdf.setFontSize(10);
+  pdf.setTextColor(20, 20, 20);
 
-  pdf.setFont('Helvetica', 'bold');
-  pdf.text('Date:', W - ML - 30, currentY);
-  pdf.setFont('Helvetica', 'normal');
-  pdf.text(letterDate, W - ML - 18, currentY);
-  currentY += 8;
+  // 3. Letter Ref & Date Line
+  pdf.setFont('Times', 'bold');
+  pdf.text('Letter Ref. No.:', x, y);
+  pdf.setFont('Times', 'normal');
+  pdf.text(`IM/2026/IAL/${letterNumber}`, x + pdf.getTextWidth('Letter Ref. No.:') + 2, y);
+  pdf.setFont('Times', 'bold');
+  pdf.text('Date:', 163, y);
+  pdf.setFont('Times', 'normal');
+  pdf.text(` ${letterDate}`, 174, y);
+  y += 10;
 
   // 4. Candidate Addressee
   pdf.setFont('Helvetica', 'normal');
-  pdf.text('To,', ML, currentY); currentY += 5;
+  pdf.text('To,', x, y); y += 6;
   pdf.setFont('Helvetica', 'bold');
-  pdf.text(studentName, ML, currentY); currentY += 5;
-
+  pdf.text(studentName, x, y); y += 6;
+  pdf.setFont('Helvetica', 'bold');
+  const detailColonX = x + 45;
+  const detailValueX = detailColonX + 5;
+  pdf.text('University Reg. Number', x, y);
+  pdf.text(':', detailColonX, y);
   pdf.setFont('Helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.text(`Reg / Roll No: ${registrationNumber}`, ML, currentY); currentY += 4.5;
-  pdf.text(`College / Institution: ${college}`, ML, currentY); currentY += 8;
+  pdf.text(registrationNumber, detailValueX, y); y += 6;
+  pdf.setFont('Helvetica', 'bold');
+  pdf.text('College / Institution', x, y);
+  pdf.text(':', detailColonX, y);
+  pdf.setFont('Helvetica', 'normal');
+  pdf.text(college, detailValueX, y); y += 12;
 
-  // 5. Subject & Salutation
+  // 5. Salutation & Acceptance Body
+  pdf.setFont('Helvetica', 'normal');
+  pdf.setFontSize(9.5);
+  pdf.text('Dear Candidate,', x, y); y += 4.8;
+  y = renderRichText(pdf, [
+    { text: 'We are pleased to accept your application and formally offer you an internship at ' },
+    { text: 'PPO Intern Technologies Private Limited (PPO Intern).', bold: true },
+    { text: ' Our internship programmes are designed in full alignment with ' },
+    { text: 'NEP-2020, AICTE and UGC Internship Guidelines,', bold: true },
+    { text: " and your university's specific internship framework." }
+  ], x, y, W - 2 * ML, 4.3, 9.5) + 7;
+
+  // 6. Internship Specification Details
   pdf.setFont('Helvetica', 'bold');
   pdf.setFontSize(10);
-  pdf.text('SUBJECT: OFFER OF INTERNSHIP ENGAGEMENT', ML, currentY);
-  currentY += 6;
+  pdf.text('Your internship details are as follows:', x, y); y += 7;
 
-  pdf.setFont('Helvetica', 'normal');
-  pdf.setFontSize(9.5);
-  pdf.text('Dear Candidate,', ML, currentY);
-  currentY += 5;
-
-  const introParagraph = template?.bodyTemplate
-    ? template.bodyTemplate
-        .replace(/{{student_name}}/g, studentName)
-        .replace(/{{college}}/g, college)
-        .replace(/{{domain}}/g, domain)
-        .replace(/{{registration_number}}/g, registrationNumber)
-        .replace(/{{roll_number}}/g, rollNumber)
-        .replace(/{{company_name}}/g, companyName)
-    : `We are pleased to inform you that you have been selected for the structured Internship Programme at ${companyName}. Our internship framework is developed in compliance with National Education Policy (NEP) 2020 guidelines to impart practical industry skills and experiential learning.`;
-
-  const splitIntro = pdf.splitTextToSize(introParagraph, W - 2 * ML);
-  pdf.text(splitIntro, ML, currentY);
-  currentY += splitIntro.length * 4.4 + 4;
-
-  // 6. Internship Specification Table
-  pdf.setFont('Helvetica', 'bold');
-  pdf.setFontSize(9.5);
-  pdf.text('INTERNSHIP PROGRAMME DETAILS:', ML, currentY);
-  currentY += 5;
-
-  const detailsTable: [string, string][] = [
-    ['Candidate Name', studentName],
-    ['University Roll / Reg No', rollNumber],
+  const rowX = x + 8;
+  const colC = 78, colV = 82, rH = 6;
+  const rows: [string, string][] = [
+    ['Name of the Student', studentName],
+    ['University Roll Number', rollNumber],
     ['College / Institution', college],
-    ['Course & Semester', deptSemester],
+    ['Department & Semester', deptSemester],
     ['Internship Domain', domain],
-    ['Total Duration', '120 Hours (NEP-2020 Aligned)'],
-    ['Mode of Internship', internshipMode],
-    ['Status', 'Confirmed / Enrolled']
+    ['Internship Duration', '120 Hours'],
+    ['Mode of Internship', `${internshipMode} (as approved by College)`]
   ];
 
-  const colKey = ML + 4;
-  const colVal = ML + 55;
-  const rowHeight = 5.2;
-
-  // Background box for details
-  pdf.setFillColor(248, 250, 252);
-  pdf.setDrawColor(226, 232, 240);
-  pdf.roundedRect(ML, currentY - 2, W - 2 * ML, detailsTable.length * rowHeight + 4, 2, 2, 'FD');
-
-  detailsTable.forEach(([key, val]) => {
+  rows.forEach(([label, value]) => {
     pdf.setFont('Helvetica', 'bold');
-    pdf.setFontSize(8.5);
-    pdf.setTextColor(51, 65, 85);
-    pdf.text(key, colKey, currentY + 2.5);
-    pdf.text(':', colVal - 4, currentY + 2.5);
+    pdf.setFontSize(9.5);
+    pdf.setTextColor(20, 20, 20);
+    pdf.text(label, rowX, y);
+    pdf.text(':', colC, y);
     pdf.setFont('Helvetica', 'normal');
-    pdf.setTextColor(15, 23, 42);
-    pdf.text(val, colVal, currentY + 2.5);
-    currentY += rowHeight;
+    pdf.text(value, colV, y);
+    y += rH;
   });
-  currentY += 8;
+  y += 5;
 
   // 7. Instructions Paragraph
   pdf.setFont('Helvetica', 'normal');
-  pdf.setFontSize(9);
-  pdf.setTextColor(51, 65, 85);
-  const closingText = `Please present this Offer Letter to your College Internship Nodal Officer (CINO) / Head of Department for formal documentation. You are expected to adhere to the code of conduct, attend live mentoring sessions, and complete the designated capstone project report.`;
-  const splitClosing = pdf.splitTextToSize(closingText, W - 2 * ML);
-  pdf.text(splitClosing, ML, currentY);
-  currentY += splitClosing.length * 4.2 + 8;
+  pdf.setFontSize(9.5);
+  y = renderRichText(pdf, [
+    { text: 'Please report to us on your start date as per the schedule above and bring this letter along with the ' },
+    { text: 'Consent Letter', bold: true },
+    { text: ' issued by your College. We also request that you inform your ' },
+    { text: 'College Internship Nodal Officer (CINO)', bold: true },
+    { text: ' upon receiving this acceptance letter. During the programme, you are required to maintain the minimum required attendance and complete all tasks and assignments given by your mentor.' }
+  ], x, y, W - 2 * ML, 4.2, 9.5) + 4;
 
-  // 8. Signatory & Stamp
-  const signatoryX = W - ML - 60;
-  pdf.setFont('Helvetica', 'bold');
-  pdf.setFontSize(9);
-  pdf.setTextColor(15, 23, 42);
-  pdf.text('For ' + companyName, signatoryX, currentY);
-  currentY += 12;
+  renderRichText(pdf, [
+    { text: 'We look forward to a meaningful and enriching internship experience and appreciate your interest in ' },
+    { text: 'PPO Intern.', bold: true }
+  ], x, y, W - 2 * ML, 4.2, 9.5);
 
-  pdf.setFont('Helvetica', 'bold');
-  pdf.text(template?.signatoryName || 'Authorized Signatory', signatoryX, currentY);
-  currentY += 4;
-  pdf.setFont('Helvetica', 'normal');
-  pdf.setFontSize(8);
-  pdf.setTextColor(100, 116, 139);
-  pdf.text(template?.signatoryRole || 'Head of Academic Partnerships', signatoryX, currentY);
-
-  // 9. Draw Footer Image if present
+  // 8. Footer Banner Image
   if (footerImg) {
     try {
-      const footerH = (322 / 1002) * W;
       pdf.addImage(footerImg, 'PNG', 0, H - footerH, W, footerH);
     } catch (e) {
-      console.warn('Footer image render skipped', e);
+      console.warn('Failed to render footer image:', e);
     }
-  } else {
-    pdf.setFontSize(7.5);
-    pdf.setTextColor(148, 163, 184);
-    pdf.text('This is a computer-generated offer letter and is valid without physical seal.', W / 2, H - 10, { align: 'center' });
   }
 
   return pdf;
 }
 
 export function offerLetterFileName(studentName?: string): string {
-  return `Internship_Offer_Letter_${(studentName || 'Student').replace(/\s+/g, '_')}.pdf`;
+  return `PPO_Intern_Offer_Letter_${(studentName || 'Student').replace(/\s+/g, '_')}.pdf`;
 }
 
 export async function createOfferLetterPdfForUser(userId: string, profile: Partial<UserProfile>): Promise<jsPDF> {

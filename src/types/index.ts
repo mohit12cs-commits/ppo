@@ -172,3 +172,51 @@ export interface SiteSettings {
     avatarUrl?: string;
   }[];
 }
+
+export interface InternshipTrack {
+  id: string;
+  title: string;
+  description?: string;
+  duration?: string;
+  badge?: string;
+  popular?: boolean;
+  category?: string;
+  rating?: number;
+  enrolledStudents?: number;
+  shortDesc?: string;
+  durationOptions?: string[];
+  stipend?: string;
+  skills?: string[];
+  skillsGained?: string[];
+  curriculum?: any[];
+  projects?: any[];
+  department?: string;
+  [key: string]: any;
+}
+
+export interface ApplicationFormData {
+  fullName: string;
+  email: string;
+  phone: string;
+  college?: string;
+  collegeName?: string;
+  degree?: string;
+  degreeBranch?: string;
+  department?: string;
+  graduationYear?: string;
+  duration?: string;
+  trackId: string;
+  [key: string]: any;
+}
+
+export interface VerificationResult {
+  valid: boolean;
+  studentName?: string;
+  certificateId?: string;
+  issueDate?: string;
+  domain?: string;
+  college?: string;
+  duration?: string;
+  grade?: string;
+  [key: string]: any;
+}

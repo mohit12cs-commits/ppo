@@ -17,7 +17,8 @@ import {
   AlertCircle,
   HelpCircle,
   Clock,
-  Sparkles
+  Sparkles,
+  IndianRupee
 } from 'lucide-react';
 
 export default function Payment() {
@@ -26,20 +27,44 @@ export default function Payment() {
 
   const [fee, setFee] = useState<number>(1000);
   const [loadingFee, setLoadingFee] = useState<boolean>(true);
-  const [processing, setProcessing] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const emailParam = searchParams.get('email');
+  const [unauthedStudent, setUnauthedStudent] = useState<any>(null);
 
   // If already paid, redirect straight to student dashboard
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
+    if (!user && !emailParam) {
       navigate('/login', { replace: true });
       return;
     }
     if (profile?.isPaid || profile?.hasPaid || profile?.paymentStatus === 'success') {
       navigate('/dashboard', { replace: true });
     }
-  }, [user, profile, authLoading, navigate]);
+  }, [user, profile, emailParam, authLoading, navigate]);
+
+  // Load unauthenticated student profile if emailParam provided
+  useEffect(() => {
+    if (user || !emailParam) return;
+
+    async function loadStudentByEmail() {
+      try {
+        const clean = emailParam!.trim().toLowerCase();
+        const q = query(collection(db, 'users'), where('email', '==', clean));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const docData = { uid: snap.docs[0].id, ...snap.docs[0].data() };
+          setUnauthedStudent(docData);
+        } else {
+          setError('No registration record found for this email address. Please register first.');
+        }
+      } catch (e) {
+        console.warn('Error loading student by email:', e);
+      }
+    }
+
+    loadStudentByEmail();
+  }, [user, emailParam]);
 
   // Fetch college-specific dynamic fee
   useEffect(() => {
@@ -87,7 +112,7 @@ export default function Payment() {
 
     openRazorpayCheckout({
       amount: amountInPaise,
-      name: 'Internship Portal',
+      name: 'PPO Intern',
       description: `NEP-2020 Internship Fee - ${profile.college || 'College'}`,
       prefill: {
         name: profile.fullName || '',
@@ -100,35 +125,37 @@ export default function Payment() {
         rollNo: profile.universityRoll || '',
         domain: profile.internshipDomain || ''
       },
+      theme: {
+        color: '#4f46e5'
+      },
       onSuccess: async (response) => {
         try {
-          const paymentId = response.razorpay_payment_id;
-          const orderId = response.razorpay_order_id || `order_${Date.now()}`;
+          const userRef = doc(db, 'users', user.uid);
           const nowIso = new Date().toISOString();
 
-          // 1. Update user profile
-          const userRef = doc(db, 'users', user.uid);
+          // 1. Update user payment status in Firestore
           await updateDoc(userRef, {
             isPaid: true,
             hasPaid: true,
             paymentStatus: 'success',
             paymentAmount: fee,
             paymentVerifiedAt: nowIso,
-            razorpayPaymentId: paymentId,
-            razorpayOrderId: orderId,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpaySignature: response.razorpay_signature,
             updatedAt: nowIso
           });
 
-          // 2. Create payment record in 'payments'
-          const payDocRef = doc(db, 'payments', paymentId);
-          await setDoc(payDocRef, {
-            id: paymentId,
+          // 2. Record payment in 'payments' collection
+          const paymentDocRef = doc(db, 'payments', response.razorpay_payment_id);
+          await setDoc(paymentDocRef, {
+            id: response.razorpay_payment_id,
             userId: user.uid,
             studentName: profile.fullName || '',
             studentEmail: profile.email || '',
             college: profile.college || '',
-            razorpayOrderId: orderId,
-            razorpayPaymentId: paymentId,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
             amount: fee,
             amountPaise: amountInPaise,
             currency: 'INR',
@@ -136,32 +163,33 @@ export default function Payment() {
             timestamp: nowIso
           });
 
-          // 3. Refresh context and navigate to student dashboard
+          // 3. Refresh context and redirect to dashboard
           await refreshProfile();
           navigate('/dashboard', { replace: true });
-        } catch (updateErr: any) {
-          console.error('Error saving payment record:', updateErr);
-          setError('Payment succeeded but profile update encountered a hiccup. Please refresh.');
+        } catch (err: any) {
+          console.error('Error saving payment record:', err);
+          setError('Payment succeeded but profile update failed. Please refresh or contact support.');
           setProcessing(false);
         }
       },
-      onFailure: (err) => {
-        console.warn('Payment failed or cancelled:', err);
+      onError: (err) => {
+        console.warn('Payment failed or dismissed:', err);
+        setError(err.description || 'Payment was cancelled or could not be completed.');
         setProcessing(false);
-        setError(err.description || 'Payment was not completed. Please try again.');
       }
     });
   };
 
-  const handleInstantDemoPayment = async () => {
+  // Instant demo payment approval for testing
+  const handleInstantApprove = async () => {
     if (!user || !profile) return;
     setError(null);
     setProcessing(true);
 
     try {
-      const paymentId = `pay_mock_${Date.now()}`;
-      const orderId = `order_mock_${Date.now()}`;
       const nowIso = new Date().toISOString();
+      const paymentId = `pay_demo_${Date.now()}`;
+      const orderId = `order_demo_${Date.now()}`;
       const amountInPaise = fee * 100;
 
       // 1. Update user profile
@@ -205,21 +233,18 @@ export default function Payment() {
   };
 
   return (
-    <div className="min-h-screen pt-28 pb-16 px-4 bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
-      <div className="absolute top-1/4 -right-32 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -left-32 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="min-h-screen pt-28 pb-16 px-4 bg-slate-50 font-sans text-left flex flex-col items-center justify-center relative overflow-hidden">
       <div className="w-full max-w-2xl relative z-10">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-3">
+        <div className="text-center mb-8 space-y-2">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
-            Step 2 of 2: Finalize Enrollment
+            <span>Finalize Enrollment</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Program Fee Payment
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">
+            Institutional Fee Payment
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Complete your college-specific fee payment to unlock your official Offer Letter.
+          <p className="text-xs sm:text-sm text-slate-600 font-medium">
+            Complete your college-subsidized fee payment to immediately unlock your official Offer Letter.
           </p>
         </div>
 
@@ -227,166 +252,121 @@ export default function Payment() {
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-3"
+            className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-start gap-3"
           >
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
             <div>
-              <p className="font-semibold">Payment Notification</p>
-              <p className="text-xs mt-0.5">{error}</p>
+              <p className="font-extrabold uppercase">Payment Notice</p>
+              <p className="mt-0.5">{error}</p>
             </div>
           </motion.div>
         )}
 
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
           {/* Student Academic Summary */}
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/60 mb-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600/10 dark:bg-indigo-400/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+          <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-200/80">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
                 <User className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-extrabold text-slate-900">
                   {profile?.fullName || 'Student Candidate'}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 font-medium">
                   {profile?.email} • {profile?.contactNumber}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-xs">
+            <div className="grid grid-cols-2 gap-4 pt-4 text-xs">
               <div>
-                <span className="text-slate-500 dark:text-slate-400 block mb-0.5">College / Institution</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  {profile?.college || 'Registered College'}
+                <span className="text-slate-400 font-bold uppercase tracking-wider block text-[10px]">Affiliated College</span>
+                <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
+                  <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  {profile?.college || 'N/A'}
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-500 dark:text-slate-400 block mb-0.5">University Roll / Reg No</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                <span className="text-slate-400 font-bold uppercase tracking-wider block text-[10px]">University Reg No.</span>
+                <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
                   {profile?.universityRoll || profile?.universityRollNo || 'N/A'}
                 </span>
               </div>
-
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block mb-0.5">Course & Semester</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <GraduationCap className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                  {profile?.degree || 'Degree'} ({profile?.semester || 'Semester'})
-                </span>
-              </div>
-
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block mb-0.5">Enrolled Track</span>
-                <span className="font-semibold text-indigo-600 dark:text-indigo-400">
-                  {profile?.internshipDomain || 'NEP-2020 Internship'}
-                </span>
-              </div>
             </div>
           </div>
 
-          {/* Pricing Box */}
-          <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-6">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-              Fee Structure (College Affiliated Rate)
-            </h4>
+          {/* Pricing Breakdown */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+              <span>Standard Internship Curriculum Fee</span>
+              <span className="line-through text-slate-400">₹3,500</span>
+            </div>
+            <div className="flex items-center justify-between text-xs font-semibold text-emerald-700">
+              <span>Institutional MoU Subsidy Discount</span>
+              <span>-₹{(3500 - fee).toLocaleString('en-IN')}</span>
+            </div>
+            <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+              <div>
+                <span className="text-sm font-extrabold text-slate-900 block">Total Payable Amount</span>
+                <span className="text-[11px] text-slate-500 font-medium">Inclusive of GST, Certificate QR, & Portal Access</span>
+              </div>
+              <span className="text-2xl font-black text-indigo-600">
+                ₹{loadingFee ? '...' : fee.toLocaleString('en-IN')}
+              </span>
+            </div>
+          </div>
 
-            <div className="space-y-2.5 text-sm">
-              <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                <span>120-Hour Industrial Mentorship & NEP Curriculum</span>
-                <span>₹{fee.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                <span>GST & Academic Portal Access</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Included</span>
-              </div>
-              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-baseline font-bold">
-                <span className="text-base text-slate-900 dark:text-white">Total Amount Due</span>
-                <div className="text-right">
-                  <span className="text-2xl text-indigo-600 dark:text-indigo-400">
-                    ₹{loadingFee ? '...' : fee.toLocaleString('en-IN')}
-                  </span>
-                  <span className="text-xs font-normal text-slate-400 block">INR (One-time fee)</span>
+          {/* Payment Actions */}
+          <div className="space-y-3 pt-2">
+            <button
+              onClick={handlePayment}
+              disabled={processing || loadingFee}
+              className="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer active:scale-95"
+            >
+              {processing ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Opening Secure Gateway...</span>
                 </div>
-              </div>
-            </div>
+              ) : (
+                <>
+                  <CreditCard className="w-4 h-4" />
+                  <span>Pay ₹{fee.toLocaleString('en-IN')} Via Razorpay</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+
+            {/* Demo / Sandbox bypass button */}
+            <button
+              onClick={handleInstantApprove}
+              disabled={processing || loadingFee}
+              className="w-full py-3 px-4 rounded-xl border border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2"
+            >
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>Instant Test Activation (Auto-Approve Demo)</span>
+            </button>
           </div>
 
-          {/* Action Button */}
-          <button
-            type="button"
-            onClick={handlePayment}
-            disabled={processing || loadingFee}
-            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-base shadow-xl shadow-indigo-500/25 flex items-center justify-center gap-3 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {processing ? (
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Processing Payment...</span>
-              </div>
-            ) : (
-              <>
-                <CreditCard className="w-5 h-5" />
-                <span>Pay ₹{fee.toLocaleString('en-IN')} via Razorpay</span>
-                <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
-
-          {/* Sandbox / Instant Demo Mode Approval */}
-          <div className="relative my-4 flex items-center justify-center">
-            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-            <span className="bg-white dark:bg-slate-900 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
-              OR Instant Demo Mode
+          {/* Trust Footnote */}
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-center gap-4 text-[11px] text-slate-500 font-medium">
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              256-Bit Encrypted
             </span>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleInstantDemoPayment}
-            disabled={processing || loadingFee}
-            className="w-full py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
-          >
-            {processing ? (
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Simulating Payment & Direct Login...</span>
-              </div>
-            ) : (
-              <>
-                <CheckCircle2 className="w-5 h-5" />
-                <span>Pay via Demo Mode (Instant Approval & Enter Dashboard)</span>
-              </>
-            )}
-          </button>
-
-          {/* Trust badges */}
-          <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 dark:text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span>Razorpay 256-Bit SSL Encrypted</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-indigo-500" />
-              <span>UPI, Cards & NetBanking</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-cyan-500" />
-              <span>Instant Offer Letter Access</span>
-            </div>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-indigo-600" />
+              Instant Offer Letter
+            </span>
+            <span>•</span>
+            <span>UGC & NEP-2020 Validated</span>
           </div>
         </div>
 
-        <div className="text-center mt-6">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Need help with your payment?{' '}
-            <Link to="/contact" className="text-indigo-600 dark:text-indigo-400 underline">
-              Contact Support
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );

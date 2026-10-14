@@ -22,9 +22,7 @@ import {
   ToggleRight
 } from 'lucide-react';
 
-const DEFAULT_TEMPLATE_BODY = `We are pleased to inform you that you have been selected for the structured Internship Programme at {{company_name}}. Our internship framework is developed in compliance with National Education Policy (NEP) 2020 guidelines to impart practical industry skills and experiential learning.
-
-During your engagement, you will be mentored by experienced practitioners, work on industry-standard project modules, and earn recognized academic internship credits.`;
+const DEFAULT_TEMPLATE_BODY = `We are pleased to accept your application and formally offer you an internship at PPO Intern Technologies Private Limited (PPO Intern). Our internship programmes are designed in full alignment with NEP-2020, AICTE and UGC Internship Guidelines, and your university's specific internship framework.`;
 
 const PLACEHOLDERS = [
   { tag: '{{student_name}}', label: 'Student Name' },
@@ -49,11 +47,11 @@ export default function OfferLetterEngine() {
   const [templateForm, setTemplateForm] = useState<OfferLetterTemplate>({
     id: '',
     templateName: 'Standard NEP-2020 Template',
-    companyName: 'Academic Internship Council',
-    signatoryName: 'Dr. R. K. Sharma',
-    signatoryRole: 'Director of Academic Affairs',
+    companyName: 'PPO Intern Technologies Private Limited',
+    signatoryName: 'Authorized Signatory',
+    signatoryRole: 'Head of Academic Partnerships',
     headerImageUrl: '/images/offer_letter_header.png',
-    footerImageUrl: '/images/offer_letter_footer.png',
+    footerImageUrl: '/images/document_footer.png',
     watermarkUrl: '',
     bodyTemplate: DEFAULT_TEMPLATE_BODY,
     version: 1,
@@ -88,11 +86,11 @@ export default function OfferLetterEngine() {
         const baseTemplate: OfferLetterTemplate = {
           id: 'template_default',
           templateName: 'NEP-2020 Standard Template (Default)',
-          companyName: 'Academic Internship Council',
-          signatoryName: 'Dr. R. K. Sharma',
-          signatoryRole: 'Director of Academic Affairs',
+          companyName: 'PPO Intern Technologies Private Limited',
+          signatoryName: 'Authorized Signatory',
+          signatoryRole: 'Head of Academic Partnerships',
           headerImageUrl: '/images/offer_letter_header.png',
-          footerImageUrl: '/images/offer_letter_footer.png',
+          footerImageUrl: '/images/document_footer.png',
           bodyTemplate: DEFAULT_TEMPLATE_BODY,
           version: 1,
           isDefault: true
@@ -232,10 +230,10 @@ export default function OfferLetterEngine() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             Dynamic Offer Letter Engine
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Multi-template builder, variable placeholders, batch cohort rules (1-2200, 2201-4400), and release/hold controls
           </p>
         </div>
@@ -292,13 +290,13 @@ export default function OfferLetterEngine() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div className="flex gap-2 border-b border-slate-200 pb-3">
         <button
           onClick={() => setActiveTab('templates')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === 'templates'
               ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100'
+              : 'bg-white text-slate-600 hover:bg-slate-100'
           }`}
         >
           <FileCheck2 className="w-4 h-4" />
@@ -310,7 +308,7 @@ export default function OfferLetterEngine() {
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === 'batches'
               ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100'
+              : 'bg-white text-slate-600 hover:bg-slate-100'
           }`}
         >
           <Layers className="w-4 h-4" />
@@ -322,11 +320,11 @@ export default function OfferLetterEngine() {
       {activeTab === 'templates' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {templates.map(tpl => (
-            <div key={tpl.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col justify-between">
+            <div key={tpl.id} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-200">
                       Version {tpl.version}
                     </span>
                     {tpl.isDefault && (
@@ -343,30 +341,30 @@ export default function OfferLetterEngine() {
                         setTemplateForm(tpl);
                         setTemplateModalOpen(true);
                       }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100"
                     >
                       <Edit3 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
 
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {tpl.templateName}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Issued By: <span className="font-semibold text-slate-700 dark:text-slate-300">{tpl.companyName}</span>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Issued By: <span className="font-semibold text-slate-700">{tpl.companyName}</span>
                 </p>
 
                 {/* Body Snippet */}
-                <div className="mt-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60 text-xs text-slate-600 dark:text-slate-300 font-serif leading-relaxed line-clamp-4">
+                <div className="mt-4 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 font-serif leading-relaxed line-clamp-4">
                   {tpl.bodyTemplate}
                 </div>
 
                 {/* Signatory */}
-                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs flex justify-between items-center text-slate-500">
+                <div className="mt-4 pt-4 border-t border-slate-100 text-xs flex justify-between items-center text-slate-500">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Signatory</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">{tpl.signatoryName}</span>
+                    <span className="font-semibold text-slate-800">{tpl.signatoryName}</span>
                     <span className="text-[11px] block">{tpl.signatoryRole}</span>
                   </div>
                   <div className="text-right text-[11px]">
@@ -383,8 +381,8 @@ export default function OfferLetterEngine() {
       {/* TAB 2: BATCH COHORT ALLOCATION RULES */}
       {activeTab === 'batches' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-indigo-900 dark:text-indigo-200 flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold">Automated Batch Allocation & Download Protection Engine</p>
               <p className="mt-0.5">
@@ -394,10 +392,11 @@ export default function OfferLetterEngine() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs overflow-hidden">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs min-w-[650px]">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <th className="py-3 px-4">Batch Name</th>
                   <th className="py-3 px-4">Allocation Rule</th>
                   <th className="py-3 px-4">Linked Template</th>
@@ -405,33 +404,33 @@ export default function OfferLetterEngine() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100">
                 {batches.map((b) => {
                   const linkedTpl = templates.find(t => t.id === b.templateId) || templates[0];
                   return (
-                    <tr key={b.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                    <tr key={b.id} className="hover:bg-slate-50/60 transition">
                       <td className="py-3 px-4">
-                        <p className="font-bold text-slate-900 dark:text-white">{b.batchName}</p>
+                        <p className="font-bold text-slate-900">{b.batchName}</p>
                         <p className="text-[11px] text-slate-400">ID: {b.id}</p>
                       </td>
 
                       <td className="py-3 px-4">
                         {b.allocationRule === 'count_range' ? (
-                          <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          <span className="font-semibold text-slate-700">
                             Student Range #{b.minCount} to #{b.maxCount}
                           </span>
                         ) : b.allocationRule === 'college' ? (
-                          <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          <span className="font-semibold text-slate-700">
                             College-Specific Rule
                           </span>
                         ) : (
-                          <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          <span className="font-semibold text-slate-700">
                             Manual Student Assignment
                           </span>
                         )}
                       </td>
 
-                      <td className="py-3 px-4 text-indigo-600 dark:text-indigo-400 font-semibold">
+                      <td className="py-3 px-4 text-indigo-600 font-semibold">
                         {linkedTpl?.templateName || 'Default Template'}
                       </td>
 
@@ -441,8 +440,8 @@ export default function OfferLetterEngine() {
                           onClick={() => handleToggleBatchRelease(b)}
                           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition cursor-pointer ${
                             b.isReleased
-                              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
-                              : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                              : 'bg-amber-50 text-amber-600 border border-amber-200'
                           }`}
                         >
                           {b.isReleased ? (
@@ -467,13 +466,13 @@ export default function OfferLetterEngine() {
                               setBatchForm(b);
                               setBatchModalOpen(true);
                             }}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100"
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteBatch(b.id)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -486,15 +485,16 @@ export default function OfferLetterEngine() {
             </table>
           </div>
         </div>
+      </div>
       )}
 
       {/* TEMPLATE EDITOR MODAL WITH LIVE PREVIEW */}
       {templateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-5xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl my-6 relative">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
+          <div className="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl my-6 relative">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {editingTemplate ? 'Edit Offer Letter Template' : 'Create Offer Letter Template'}
                 </h3>
                 <p className="text-[11px] text-slate-400">
@@ -511,7 +511,7 @@ export default function OfferLetterEngine() {
               <form onSubmit={handleSaveTemplate} className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-semibold text-slate-700 mb-1">
                       Template Name
                     </label>
                     <input
@@ -519,11 +519,11 @@ export default function OfferLetterEngine() {
                       value={templateForm.templateName}
                       onChange={(e) => setTemplateForm({ ...templateForm, templateName: e.target.value })}
                       required
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-semibold text-slate-700 mb-1">
                       Issuing Company / Authority
                     </label>
                     <input
@@ -531,14 +531,14 @@ export default function OfferLetterEngine() {
                       value={templateForm.companyName}
                       onChange={(e) => setTemplateForm({ ...templateForm, companyName: e.target.value })}
                       required
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-semibold text-slate-700 mb-1">
                       Signatory Name
                     </label>
                     <input
@@ -546,11 +546,11 @@ export default function OfferLetterEngine() {
                       value={templateForm.signatoryName}
                       onChange={(e) => setTemplateForm({ ...templateForm, signatoryName: e.target.value })}
                       required
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block font-semibold text-slate-700 mb-1">
                       Signatory Designation
                     </label>
                     <input
@@ -558,40 +558,107 @@ export default function OfferLetterEngine() {
                       value={templateForm.signatoryRole}
                       onChange={(e) => setTemplateForm({ ...templateForm, signatoryRole: e.target.value })}
                       required
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                     />
                   </div>
                 </div>
 
-                {/* Clickable Placeholders Tag Strip */}
-                <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Click to Insert Placeholders:
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {PLACEHOLDERS.map(p => (
+                {/* Header and Footer Image Uploaders like prakriti */}
+                <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1 text-[11px]">
+                      Header Banner Image
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <label className="flex-1 cursor-pointer">
+                        <div className="w-full py-1.5 px-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-center font-bold text-[10px] rounded-lg border border-indigo-200 transition">
+                          Upload Header Image
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const r = new FileReader();
+                              r.onload = ev => setTemplateForm(p => ({ ...p, headerImageUrl: ev.target?.result as string }));
+                              r.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
                       <button
-                        key={p.tag}
                         type="button"
-                        onClick={() => insertPlaceholder(p.tag)}
-                        className="px-2 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 text-[10px] font-mono border border-indigo-200 dark:border-indigo-800 transition"
+                        onClick={() => setTemplateForm(p => ({ ...p, headerImageUrl: '/images/offer_letter_header.png' }))}
+                        className="text-[10px] text-slate-500 hover:text-slate-800"
                       >
-                        + {p.tag}
+                        Default
                       </button>
-                    ))}
+                    </div>
+                    {templateForm.headerImageUrl && (
+                      <img src={templateForm.headerImageUrl} alt="Header" className="mt-2 h-9 w-full object-contain border border-slate-200 rounded-md bg-white" />
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1 text-[11px]">
+                      Footer Banner Image
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <label className="flex-1 cursor-pointer">
+                        <div className="w-full py-1.5 px-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-center font-bold text-[10px] rounded-lg border border-indigo-200 transition">
+                          Upload Footer Image
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const r = new FileReader();
+                              r.onload = ev => setTemplateForm(p => ({ ...p, footerImageUrl: ev.target?.result as string }));
+                              r.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setTemplateForm(p => ({ ...p, footerImageUrl: '/images/document_footer.png' }))}
+                        className="text-[10px] text-slate-500 hover:text-slate-800"
+                      >
+                        Default
+                      </button>
+                    </div>
+                    {templateForm.footerImageUrl && (
+                      <img src={templateForm.footerImageUrl} alt="Footer" className="mt-2 h-9 w-full object-contain border border-slate-200 rounded-md bg-white" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Standard Legal Body Notice */}
+                <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-[11px] text-amber-900 flex items-start gap-2">
+                  <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold">Standardized Legal Body (NEP-2020 Compliant):</span>
+                    <p className="mt-0.5 text-amber-800">
+                      As mandated, the official offer letter body content remains strictly standardized for all students. You only need to configure the <strong>Header Banner</strong> and <strong>Footer Banner</strong> above.
+                    </p>
                   </div>
                 </div>
 
                 {/* Body Textarea */}
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Acceptance Letter Body Paragraphs
+                  <label className="block font-semibold text-slate-700 mb-1">
+                    Standard Acceptance Paragraph (Fixed)
                   </label>
                   <textarea
-                    rows={6}
+                    rows={4}
+                    readOnly
                     value={templateForm.bodyTemplate}
-                    onChange={(e) => setTemplateForm({ ...templateForm, bodyTemplate: e.target.value })}
-                    className="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono text-[11px] leading-relaxed"
+                    className="w-full p-3 bg-slate-100/70 border border-slate-200 rounded-xl font-mono text-[11px] leading-relaxed text-slate-600 cursor-not-allowed"
                   />
                 </div>
 
@@ -599,7 +666,7 @@ export default function OfferLetterEngine() {
                   <button
                     type="button"
                     onClick={() => setTemplateModalOpen(false)}
-                    className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold"
+                    className="px-4 py-2 rounded-xl border border-slate-200 font-semibold"
                   >
                     Cancel
                   </button>
@@ -614,9 +681,9 @@ export default function OfferLetterEngine() {
               </form>
 
               {/* Real-time Live Letter Preview */}
-              <div className="bg-slate-100 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+              <div className="bg-slate-100 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5 text-indigo-500" />
                       Live Letter Preview
@@ -624,46 +691,56 @@ export default function OfferLetterEngine() {
                     <span className="text-[10px] text-slate-400">Sample Candidate View</span>
                   </div>
 
-                  <div className="bg-white text-slate-900 p-6 rounded-xl shadow-xs text-[11px] font-serif leading-relaxed border border-slate-200 space-y-3">
-                    <div className="text-center pb-2 border-b border-slate-200">
-                      <p className="font-sans font-bold text-xs uppercase tracking-wider text-indigo-900">
-                        {templateForm.companyName || 'COMPANY NAME'}
+                  <div className="bg-white text-slate-900 rounded-xl shadow-xs text-[11px] font-serif leading-relaxed border border-slate-200 overflow-hidden">
+                    {templateForm.headerImageUrl ? (
+                      <img src={templateForm.headerImageUrl} alt="Letter Header" className="w-full h-auto object-cover" />
+                    ) : (
+                      <div className="text-center py-3 px-6 bg-slate-50 border-b border-slate-200">
+                        <p className="font-sans font-bold text-xs uppercase tracking-wider text-indigo-900">
+                          {templateForm.companyName || 'COMPANY NAME'}
+                        </p>
+                        <p className="text-[9px] text-slate-500 font-sans">
+                          NEP-2020 Aligned Academic Framework
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="p-6 space-y-3">
+                      <div className="flex justify-between text-[10px] text-slate-600 font-sans">
+                        <span>Ref: INT/2026/OFFER/10482</span>
+                        <span>Date: 14/10/2026</span>
+                      </div>
+
+                      <div className="text-[10px] font-sans">
+                        <p className="font-bold">To: Aditi Sharma</p>
+                        <p>Roll No: 21BCE1004 • GEC Jaipur</p>
+                      </div>
+
+                      <p className="font-sans font-bold text-[10px] text-slate-800">
+                        SUBJECT: OFFER OF INTERNSHIP ENGAGEMENT
                       </p>
-                      <p className="text-[9px] text-slate-500 font-sans">
-                        NEP-2020 Aligned Academic Framework
+
+                      <p className="text-[10px] text-slate-700 whitespace-pre-wrap">
+                        {templateForm.bodyTemplate
+                          .replace(/{{student_name}}/g, 'Aditi Sharma')
+                          .replace(/{{college}}/g, 'Government Engineering College')
+                          .replace(/{{domain}}/g, 'Web Development & Full Stack')
+                          .replace(/{{registration_number}}/g, '21BCE1004')
+                          .replace(/{{roll_number}}/g, '21BCE1004')
+                          .replace(/{{company_name}}/g, templateForm.companyName || 'Academic Internship Council')}
                       </p>
-                    </div>
 
-                    <div className="flex justify-between text-[10px] text-slate-600 font-sans">
-                      <span>Ref: INT/2026/OFFER/10482</span>
-                      <span>Date: 14/10/2026</span>
-                    </div>
-
-                    <div className="text-[10px] font-sans">
-                      <p className="font-bold">To: Aditi Sharma</p>
-                      <p>Roll No: 21BCE1004 • GEC Jaipur</p>
-                    </div>
-
-                    <p className="font-sans font-bold text-[10px] text-slate-800">
-                      SUBJECT: OFFER OF INTERNSHIP ENGAGEMENT
-                    </p>
-
-                    <p className="text-[10px] text-slate-700 whitespace-pre-wrap">
-                      {templateForm.bodyTemplate
-                        .replace(/{{student_name}}/g, 'Aditi Sharma')
-                        .replace(/{{college}}/g, 'Government Engineering College')
-                        .replace(/{{domain}}/g, 'Web Development & Full Stack')
-                        .replace(/{{registration_number}}/g, '21BCE1004')
-                        .replace(/{{roll_number}}/g, '21BCE1004')
-                        .replace(/{{company_name}}/g, templateForm.companyName || 'Academic Internship Council')}
-                    </p>
-
-                    <div className="pt-4 border-t border-slate-200 flex justify-end font-sans">
-                      <div className="text-right text-[10px]">
-                        <p className="font-bold">{templateForm.signatoryName || 'Authorized Signatory'}</p>
-                        <p className="text-slate-500">{templateForm.signatoryRole || 'Head of Affairs'}</p>
+                      <div className="pt-4 border-t border-slate-200 flex justify-end font-sans">
+                        <div className="text-right text-[10px]">
+                          <p className="font-bold">{templateForm.signatoryName || 'Authorized Signatory'}</p>
+                          <p className="text-slate-500">{templateForm.signatoryRole || 'Head of Affairs'}</p>
+                        </div>
                       </div>
                     </div>
+
+                    {templateForm.footerImageUrl && (
+                      <img src={templateForm.footerImageUrl} alt="Letter Footer" className="w-full h-auto object-cover border-t border-slate-100" />
+                    )}
                   </div>
                 </div>
 
@@ -679,9 +756,9 @@ export default function OfferLetterEngine() {
       {/* BATCH MODAL */}
       {batchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl relative">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+              <h3 className="text-base font-bold text-slate-900">
                 {editingBatch ? 'Edit Cohort Batch Rule' : 'New Cohort Batch Rule'}
               </h3>
               <button onClick={() => setBatchModalOpen(false)} className="p-1 text-slate-400 hover:text-slate-600">
@@ -691,7 +768,7 @@ export default function OfferLetterEngine() {
 
             <form onSubmit={handleSaveBatch} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Batch Name
                 </label>
                 <input
@@ -700,18 +777,18 @@ export default function OfferLetterEngine() {
                   onChange={(e) => setBatchForm({ ...batchForm, batchName: e.target.value })}
                   placeholder="e.g. Batch 2: Roll Count 2201 - 4400"
                   required
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Linked Offer Letter Template
                 </label>
                 <select
                   value={batchForm.templateId}
                   onChange={(e) => setBatchForm({ ...batchForm, templateId: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                 >
                   {templates.map(t => (
                     <option key={t.id} value={t.id}>{t.templateName}</option>
@@ -720,13 +797,13 @@ export default function OfferLetterEngine() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Allocation Rule Type
                 </label>
                 <select
                   value={batchForm.allocationRule}
                   onChange={(e) => setBatchForm({ ...batchForm, allocationRule: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                 >
                   <option value="count_range">Candidate Count Range (e.g. 1 to 2200)</option>
                   <option value="college">College Affiliation Rule</option>
@@ -737,28 +814,28 @@ export default function OfferLetterEngine() {
               {batchForm.allocationRule === 'count_range' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Min Count</label>
+                    <label className="block font-semibold text-slate-700 mb-1">Min Count</label>
                     <input
                       type="number"
                       value={batchForm.minCount || 1}
                       onChange={(e) => setBatchForm({ ...batchForm, minCount: Number(e.target.value) })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Max Count</label>
+                    <label className="block font-semibold text-slate-700 mb-1">Max Count</label>
                     <input
                       type="number"
                       value={batchForm.maxCount || 2200}
                       onChange={(e) => setBatchForm({ ...batchForm, maxCount: Number(e.target.value) })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"
                     />
                   </div>
                 </div>
               )}
 
-              <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-                <label className="flex items-center gap-2 cursor-pointer font-semibold text-slate-800 dark:text-slate-200">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <label className="flex items-center gap-2 cursor-pointer font-semibold text-slate-800">
                   <input
                     type="checkbox"
                     checked={batchForm.isReleased}
@@ -772,11 +849,11 @@ export default function OfferLetterEngine() {
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
+              <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setBatchModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold"
+                  className="px-4 py-2 rounded-xl border border-slate-200 font-semibold"
                 >
                   Cancel
                 </button>
