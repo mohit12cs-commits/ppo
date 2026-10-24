@@ -23,7 +23,7 @@ export const PrivacyPolicy: React.FC = () => {
           <div>
             <h2 className="text-base font-bold text-slate-900 mb-2">1. Overview</h2>
             <p>
-              PPO Intern ("we", "our", or "us") is committed to safeguarding the privacy and personal academic data of university scholars, faculty nodal officers, and affiliated institutions. This Privacy Policy outlines our procedures concerning the collection, use, and disclosure of student information when registering for internship cohorts.
+              Patliputra University (PPU) Internship Portal ("we", "our", or "us") is committed to safeguarding the privacy and personal academic data of university scholars, faculty nodal officers, and affiliated institutions. This Privacy Policy outlines our procedures concerning the collection, use, and disclosure of student information when registering for internship cohorts.
             </p>
           </div>
 

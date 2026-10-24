@@ -220,13 +220,13 @@ export const Home: React.FC = () => {
                   />
                 </div>
                 {/* Floating pill badge */}
-                <div className="absolute -top-4 -right-4 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-lg flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                <div className="absolute sm:-top-4 sm:-right-4 top-2 right-2 p-2.5 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg flex items-center gap-2 sm:gap-2.5 max-w-[calc(100%-1rem)]">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0">
                     <Star size={16} className="fill-indigo-600" />
                   </div>
                   <div className="text-left">
-                    <p className="text-xs font-black text-slate-900">1-on-1 Code Reviews</p>
-                    <p className="text-[10px] text-slate-500 font-semibold">Weekly Milestone Viva</p>
+                    <p className="text-[11px] sm:text-xs font-black text-slate-900 leading-tight">1-on-1 Code Reviews</p>
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold">Weekly Milestone Viva</p>
                   </div>
                 </div>
               </div>
@@ -244,7 +244,7 @@ export const Home: React.FC = () => {
               </h2>
 
               <p className="text-slate-600 leading-relaxed font-medium text-sm sm:text-base">
-                Under the National Education Policy (NEP) 2020, university students in undergraduate and postgraduate programs are required to complete structured internships for course credit. PPO Intern provides institutional accreditation, guided daily learning modules, live project evaluations, and automated verifiable records.
+                Under the National Education Policy (NEP) 2020, university students in undergraduate and postgraduate programs are required to complete structured internships for course credit. Patliputra University (PPU) Internship Portal provides institutional accreditation, guided daily learning modules, live project evaluations, and automated verifiable records.
               </p>
 
               <div className="space-y-3.5 pt-2">
@@ -370,7 +370,7 @@ export const Home: React.FC = () => {
               </h2>
 
               <p className="text-slate-600 leading-relaxed font-medium text-sm sm:text-base">
-                Each certificate issued by PPO Intern contains an immutable cryptographic QR code linked directly to the student's verified attendance log, capstone score, and industrial mentor signature.
+                Each certificate issued by Patliputra University (PPU) Internship Portal contains an immutable cryptographic QR code linked directly to the student's verified attendance log, capstone score, and industrial mentor signature.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -416,13 +416,13 @@ export const Home: React.FC = () => {
                   />
                 </div>
                 {/* Floating pill badge */}
-                <div className="absolute -bottom-4 -left-4 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-lg flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                    <CheckCircle2 size={20} />
+                <div className="absolute sm:-bottom-4 sm:-left-4 bottom-2 left-2 p-2.5 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg flex items-center gap-2 sm:gap-3 max-w-[calc(100%-1rem)]">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shrink-0">
+                    <CheckCircle2 size={18} />
                   </div>
                   <div className="text-left">
-                    <p className="text-xs font-black text-slate-900">100% Audit Cleared</p>
-                    <p className="text-[10px] text-slate-500 font-semibold">Accepted by 150+ Affiliated Colleges</p>
+                    <p className="text-[11px] sm:text-xs font-black text-slate-900 leading-tight">100% Audit Cleared</p>
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold">Accepted by 150+ Affiliated Colleges</p>
                   </div>
                 </div>
               </div>

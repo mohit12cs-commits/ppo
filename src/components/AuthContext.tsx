@@ -35,62 +35,81 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserProfile = async (currentUser: User) => {
     try {
-      // 1. Check if user is Admin
-      const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
-      if (adminDoc.exists() && adminDoc.data()?.isActive !== false) {
-        const aData = adminDoc.data() as AdminProfile;
-        setAdminProfile(aData);
-        setIsAdmin(true);
-      } else if (
-        currentUser.email?.toLowerCase() === 'admin@ppointern.com' ||
-        currentUser.email?.toLowerCase() === 'admin@internmitra.com'
-      ) {
-        setIsAdmin(true);
-        setAdminProfile({
+      const email = (currentUser.email || '').toLowerCase().trim();
+      const isKnownAdmin = [
+        'admin@internmitra.com',
+        'admin@ppointern.com',
+        'admin@internkendra.com',
+        'gargmohit8306@gmail.com'
+      ].includes(email);
+
+      let isAdminUser = isKnownAdmin;
+      let adminData: AdminProfile | null = null;
+
+      if (isKnownAdmin) {
+        isAdminUser = true;
+        adminData = {
           uid: currentUser.uid,
-          email: currentUser.email,
+          email: currentUser.email || '',
           role: 'admin',
           fullName: 'Master Administrator',
           createdAt: new Date().toISOString(),
           isActive: true
-        });
+        };
       } else {
-        setIsAdmin(false);
-        setAdminProfile(null);
+        // Try reading admin doc safely; ignore if user is a standard student
+        try {
+          const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
+          if (adminDoc.exists() && adminDoc.data()?.isActive !== false) {
+            adminData = adminDoc.data() as AdminProfile;
+            isAdminUser = true;
+          }
+        } catch {
+          // Standard student accounts do not have admin permissions; this is normal
+          isAdminUser = false;
+          adminData = null;
+        }
       }
 
-      // 2. Check if student profile in 'users'
-      const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-      if (userDoc.exists()) {
-        const uData = userDoc.data() as UserProfile;
-        setProfile(uData);
-      } else if (!adminDoc.exists()) {
-        // Fallback profile if newly registered
-        const fallback: UserProfile = {
-          uid: currentUser.uid,
-          fullName: currentUser.displayName || 'Student',
-          email: currentUser.email || '',
-          contactNumber: '',
-          gender: 'Male',
-          parentName: '',
-          district: '',
-          college: '',
-          university: '',
-          degree: 'B.Tech / B.E.',
-          department: '',
-          subject: '',
-          session: '2023-27',
-          semester: 'Semester 5',
-          universityRoll: '',
-          internshipDomain: 'Web Development & Full Stack',
-          isPaid: false,
-          paymentStatus: 'pending',
-          registrationDate: new Date().toISOString()
-        };
-        setProfile(fallback);
+      setIsAdmin(isAdminUser);
+      setAdminProfile(adminData);
+
+      // 2. Fetch student profile from 'users'
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          const uData = userDoc.data() as UserProfile;
+          setProfile(uData);
+        } else if (!isAdminUser) {
+          // Fallback profile if newly registered
+          const fallback: UserProfile = {
+            uid: currentUser.uid,
+            fullName: currentUser.displayName || 'Student',
+            email: currentUser.email || '',
+            contactNumber: '',
+            gender: 'Male',
+            parentName: '',
+            district: '',
+            college: '',
+            university: '',
+            degree: 'B.Tech / B.E.',
+            department: '',
+            subject: '',
+            session: '2023-27',
+            semester: 'Semester 5',
+            universityRoll: '',
+            internshipDomain: 'Web Development & Full Stack',
+            isPaid: false,
+            paymentStatus: 'pending',
+            registrationDate: new Date().toISOString()
+          };
+          setProfile(fallback);
+        }
+      } catch (userErr) {
+        console.warn('Student profile fetch note:', userErr);
       }
     } catch (err) {
-      console.error('Error fetching user profile:', err);
+      console.warn('Error loading user profile:', err);
     } finally {
       setLoading(false);
     }

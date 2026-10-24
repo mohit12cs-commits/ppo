@@ -31,37 +31,39 @@ export const Hero: React.FC<HeroProps> = ({ onSearch, onOpenApply, onOpenVerify 
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 shadow-inner mb-6 backdrop-blur-md">
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-xs font-semibold text-slate-300">
-              Batch Admissions Open for 2026 • ISO 9001:2015 & MSME Accredited
+              Patliputra University (PPU) • 2026 Cohorts Open • NEP-2020 Aligned
             </span>
           </div>
 
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] mb-6">
-            Launch Your Career With <br className="hidden sm:inline" />
-            <span className="gradient-text">Industry-Recognized</span> Internships
+            Patliputra University <br className="hidden sm:inline" />
+            <span className="gradient-text">Official Internship</span> Portal
           </h1>
 
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-slate-300 mb-8 leading-relaxed font-normal">
-            Work on live production capstone projects, gain hands-on technical mastery under senior mentors, and graduate with verifiable certificates recognized by leading tech recruiters.
+            Certified 120-hour industry internships for Patliputra University (PPU) students across all affiliated colleges. Work on live projects under senior mentors with instant verifiable offer letters.
           </p>
 
           {/* Interactive Search Bar */}
           <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto mb-10 relative">
-            <div className="relative flex items-center shadow-2xl rounded-2xl overflow-hidden bg-slate-900/90 border border-indigo-500/30 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all p-1.5">
-              <Search className="w-5 h-5 text-slate-400 ml-4 mr-2 shrink-0" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search tracks: Full Stack, AI & ML, Cloud, Cyber Security..."
-                className="w-full bg-transparent border-none py-3 px-2 text-white placeholder-slate-400 text-sm focus:outline-none"
-              />
+            <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center shadow-2xl rounded-2xl overflow-hidden bg-slate-900/90 border border-indigo-500/30 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all p-1.5 gap-1.5 sm:gap-0">
+              <div className="flex items-center flex-1">
+                <Search className="w-5 h-5 text-slate-400 ml-3 mr-2 shrink-0" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search tracks: Full Stack, AI & ML, Cloud..."
+                  className="w-full bg-transparent border-none py-2.5 sm:py-3 px-2 text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none"
+                />
+              </div>
               <button
                 type="submit"
-                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all shadow-md shrink-0 flex items-center gap-1.5"
+                className="w-full sm:w-auto px-5 py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-md shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                Find Tracks
+                <span>Find Tracks</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

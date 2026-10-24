@@ -252,7 +252,7 @@ export async function createOfferLetterPdf(
   pdf.text('Dear Candidate,', x, y); y += 4.8;
   y = renderRichText(pdf, [
     { text: 'We are pleased to accept your application and formally offer you an internship at ' },
-    { text: 'PPO Intern Technologies Private Limited (PPO Intern).', bold: true },
+    { text: 'Patliputra University (PPU) Technical Internship Council.', bold: true },
     { text: ' Our internship programmes are designed in full alignment with ' },
     { text: 'NEP-2020, AICTE and UGC Internship Guidelines,', bold: true },
     { text: " and your university's specific internship framework." }
@@ -300,7 +300,7 @@ export async function createOfferLetterPdf(
 
   renderRichText(pdf, [
     { text: 'We look forward to a meaningful and enriching internship experience and appreciate your interest in ' },
-    { text: 'PPO Intern.', bold: true }
+    { text: 'Patliputra University (PPU) Technical Internship Council.', bold: true }
   ], x, y, W - 2 * ML, 4.2, 9.5);
 
   // 8. Footer Banner Image

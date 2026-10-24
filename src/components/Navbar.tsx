@@ -62,14 +62,14 @@ export const Navbar: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl font-black tracking-tight text-slate-900 font-heading">
-                  PPO<span className="text-indigo-600">Intern</span>
+                  PPU<span className="text-indigo-600">Intern</span>
                 </span>
                 <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  NEP 2020
+                  PPU • NEP 2020
                 </span>
               </div>
               <p className="text-[10px] text-slate-500 font-medium tracking-wide hidden sm:block">
-                Industrial Internship & Placement Council
+                Patliputra University Internship Portal
               </p>
             </div>
           </Link>
@@ -126,7 +126,7 @@ export const Navbar: React.FC = () => {
                   className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 rounded-xl shadow-md shadow-indigo-600/25 active:scale-95 transition-all"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Enroll Now</span>
+                  <span>Register</span>
                 </Link>
               </div>
             )}
@@ -145,9 +145,18 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
+      {/* Mobile Menu Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          onClick={() => setMobileMenuOpen(false)}
+          className="md:hidden fixed inset-0 top-[65px] bg-slate-900/30 backdrop-blur-xs z-40"
+          aria-hidden="true"
+        />
+      )}
+
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 mt-3 shadow-xl animate-in fade-in slide-in-from-top-2">
+        <div className="md:hidden relative z-50 bg-white border-b border-slate-200 px-4 pt-3 pb-6 shadow-xl animate-in fade-in slide-in-from-top-2">
           <div className="space-y-1 mb-4">
             {navTabs.map((tab) => {
               const isActive = location.pathname === tab.path;
@@ -155,6 +164,7 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={tab.path}
                   to={tab.path}
+                  onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                     isActive
                       ? 'bg-indigo-600 text-white shadow-xs'
@@ -173,14 +183,18 @@ export const Navbar: React.FC = () => {
               <>
                 <Link
                   to={isAdmin ? '/admin' : '/dashboard'}
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-bold text-slate-900 bg-slate-100 border border-slate-200 rounded-xl"
                 >
                   <LayoutDashboard className="w-4 h-4 text-indigo-600" />
                   <span>{isAdmin ? 'Admin Console' : 'My Dashboard'}</span>
                 </Link>
                 <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Sign Out</span>
@@ -190,15 +204,17 @@ export const Navbar: React.FC = () => {
               <>
                 <Link
                   to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-2.5 text-center text-sm font-bold text-slate-800 bg-slate-100 border border-slate-200 rounded-xl"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-2.5 text-center text-sm font-bold text-white bg-indigo-600 rounded-xl shadow-md shadow-indigo-600/25"
                 >
-                  Enroll Now
+                  Register
                 </Link>
               </>
             )}

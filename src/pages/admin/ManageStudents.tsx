@@ -60,6 +60,11 @@ export default function ManageStudents() {
       const snap = await getDocs(collection(db, 'users'));
       if (!snap.empty) {
         const list = snap.docs.map(d => ({ uid: d.id, ...d.data() } as UserProfile));
+        list.sort((a, b) => {
+          const tA = new Date(a.createdAt || a.registrationDate || 0).getTime();
+          const tB = new Date(b.createdAt || b.registrationDate || 0).getTime();
+          return tB - tA;
+        });
         setStudents(list);
       } else {
         setStudents([]);

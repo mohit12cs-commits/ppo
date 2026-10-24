@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { db } from '../../lib/firebase';
 import { collection, getDocs, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { PaymentRecord, UserProfile } from '../../types';
@@ -304,6 +305,16 @@ export default function ManagePayments() {
               </span>
             )}
           </button>
+
+          {/* Razorpay Gateway Keys Link */}
+          <Link
+            to="/admin/settings"
+            className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 shadow-xs transition cursor-pointer border border-slate-200"
+            title="Configure Razorpay Key ID and Secret in Database"
+          >
+            <CreditCard className="w-4 h-4 text-indigo-600" />
+            <span>Gateway API Keys</span>
+          </Link>
 
           {/* Sync Button (Last 100 Payments) */}
           <button

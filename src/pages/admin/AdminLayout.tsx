@@ -49,8 +49,8 @@ export default function AdminLayout() {
             <GraduationCap className="w-5 h-5" />
           </div>
           <div>
-            <span className="font-black text-xs tracking-tight text-slate-900 block">PPO INTERN</span>
-            <span className="text-[10px] font-extrabold text-indigo-600 uppercase">Admin Panel</span>
+            <span className="font-black text-xs tracking-tight text-slate-900 block">PPU INTERN</span>
+            <span className="text-[10px] font-extrabold text-indigo-600 uppercase">Patliputra University</span>
           </div>
         </div>
         <button
@@ -84,10 +84,10 @@ export default function AdminLayout() {
               </div>
               <div className="text-left">
                 <h2 className="font-black text-sm tracking-tight text-slate-900 leading-none">
-                  PPO INTERN
+                  PPU INTERN
                 </h2>
                 <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-wider block mt-0.5">
-                  Admin Console
+                  Patliputra University
                 </span>
               </div>
             </div>

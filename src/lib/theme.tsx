@@ -21,9 +21,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const root = document.documentElement;
     root.classList.remove('dark');
     root.classList.add('light');
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('portal_theme', 'light');
-    }
   }, []);
 
   return (

@@ -24,39 +24,73 @@ if (razorpayKeyId && razorpayKeySecret && !razorpayKeyId.includes('YourKeyIdHere
 }
 
 // Initialize Nodemailer SMTP Transporter
+const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+const smtpPort = Number(process.env.SMTP_PORT) || 465;
+const smtpUser = (process.env.SMTP_USER || 'mohit12cs@gmail.com').replace(/^["']|["']$/g, '').trim();
+const smtpPass = (process.env.SMTP_PASS || 'twrv msap hfua yhcb').replace(/^["']|["']$/g, '').trim();
 const smtpTransporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: Number(process.env.SMTP_PORT) || 465,
-  secure: Number(process.env.SMTP_PORT) === 465,
+  host: smtpHost,
+  port: smtpPort,
+  secure: smtpPort === 465,
   auth: {
-    user: process.env.SMTP_USER || 'mohit12cs@gmail.com',
-    pass: process.env.SMTP_PASS || 'twrv msap hfua yhcb',
+    user: smtpUser,
+    pass: smtpPass,
   },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+// Dynamically fetch current MAIL_FROM and company name from environment
+function getCurrentMailFrom(): string {
+  return (process.env.MAIL_FROM || 'InternMitra <mohit12cs@gmail.com>').replace(/^["']|["']$/g, '').trim();
+}
+
+// Dynamically determine the portal / company name from MAIL_FROM (e.g. "InternMitra <user@gmail.com>" -> "InternMitra")
+function getDynamicCompanyName(customName?: string): string {
+  if (customName && customName.trim()) return customName.trim();
+  const raw = (process.env.MAIL_FROM || '').replace(/^["']|["']$/g, '').trim();
+  // Match display name before '<' or before '@'
+  const match = raw.match(/^"?([^"<@]+)"?\s*</) || raw.match(/^([^<@]+)/);
+  if (match && match[1].trim()) {
+    return match[1].trim();
+  }
+  return process.env.VITE_APP_NAME || 'InternMitra';
+}
+
+// Brand configuration endpoint
+app.get('/api/config/brand', (req, res) => {
+  res.json({
+    companyName: getDynamicCompanyName(),
+    mailFrom: getCurrentMailFrom()
+  });
 });
 
 // 1. Welcome / Registration Email endpoint
 app.post('/api/send-welcome-email', async (req, res) => {
   try {
-    const { studentName, email, rollNo, college, domain } = req.body;
+    const { studentName, email, rollNo, college, domain, companyName: customCompany } = req.body;
+    const companyName = getDynamicCompanyName(customCompany);
+    const activeMailFrom = getCurrentMailFrom();
 
     if (!email) {
       return res.status(400).json({ error: 'Recipient email is required' });
     }
 
     const mailOptions = {
-      from: process.env.MAIL_FROM || 'PPO Intern <mohit12cs@gmail.com>',
+      from: activeMailFrom,
       to: email,
-      subject: `Registration Confirmed - 120-Hour Internship Program | PPO Intern`,
+      subject: `Registration Confirmed - 120-Hour Internship Program | ${companyName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
           <div style="background: linear-gradient(135deg, #4f46e5, #06b6d4); padding: 30px; text-align: center; color: #ffffff;">
-            <h1 style="margin: 0; font-size: 24px; font-weight: bold; letter-spacing: -0.5px;">PPO Intern</h1>
+            <h1 style="margin: 0; font-size: 24px; font-weight: bold; letter-spacing: -0.5px;">${companyName}</h1>
             <p style="margin: 6px 0 0; font-size: 13px; opacity: 0.9;">NEP-2020 Aligned Industrial Internship Portal</p>
           </div>
           
           <div style="padding: 30px; color: #334155; line-height: 1.6;">
             <p style="font-size: 16px; font-weight: bold; color: #0f172a; margin-top: 0;">Dear ${studentName || 'Student'},</p>
-            <p style="font-size: 14px;">Congratulations! Your registration for the <strong>NEP-2020 Compliant 120-Hour Industrial Internship Program</strong> has been successfully confirmed.</p>
+            <p style="font-size: 14px;">Congratulations! Your registration for the <strong>NEP-2020 Compliant 120-Hour Industrial Internship Program</strong> at <strong>${companyName}</strong> has been successfully confirmed.</p>
             
             <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin: 20px 0;">
               <h3 style="margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #4f46e5;">Your Enrolled Particulars</h3>
@@ -96,16 +130,16 @@ app.post('/api/send-welcome-email', async (req, res) => {
           </div>
 
           <div style="background-color: #f1f5f9; padding: 16px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0;">
-            <p style="margin: 0;">© 2026 PPO Intern. All rights reserved.</p>
-            <p style="margin: 4px 0 0;">Need assistance? Reply directly to this email or contact support@ppointern.com</p>
+            <p style="margin: 0;">© ${new Date().getFullYear()} ${companyName}. All rights reserved.</p>
+            <p style="margin: 4px 0 0;">Need assistance? Reply directly to this email or contact support.</p>
           </div>
         </div>
       `,
     };
 
     const info = await smtpTransporter.sendMail(mailOptions);
-    console.log('Welcome email dispatched successfully:', info.messageId);
-    return res.json({ success: true, messageId: info.messageId });
+    console.log(`Welcome email dispatched successfully to ${email} (Message ID: ${info.messageId}) [Brand: ${companyName}]`);
+    return res.json({ success: true, messageId: info.messageId, companyName });
   } catch (err: any) {
     console.error('Error sending welcome email:', err);
     // Don't block registration even if SMTP temporarily fails
@@ -221,15 +255,16 @@ app.post('/api/admin/change-student-password', async (req, res) => {
     }
 
     // Send email notification to student with their updated password
+    const companyName = getDynamicCompanyName(req.body.companyName);
     try {
       await smtpTransporter.sendMail({
-        from: process.env.MAIL_FROM || 'PPO Intern <mohit12cs@gmail.com>',
+        from: getCurrentMailFrom(),
         to: studentEmail,
-        subject: `Your PPO Intern Portal Password Has Been Updated`,
+        subject: `Your ${companyName} Portal Password Has Been Updated`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
             <div style="background: linear-gradient(135deg, #4f46e5, #06b6d4); padding: 25px; text-align: center; color: #ffffff;">
-              <h2 style="margin: 0; font-size: 22px;">PPO Intern</h2>
+              <h2 style="margin: 0; font-size: 22px;">${companyName}</h2>
               <p style="margin: 4px 0 0; font-size: 13px; opacity: 0.9;">Account Security Notice</p>
             </div>
             <div style="padding: 25px; color: #334155; line-height: 1.6;">
@@ -247,7 +282,7 @@ app.post('/api/admin/change-student-password', async (req, res) => {
               </div>
             </div>
             <div style="background-color: #f1f5f9; padding: 12px; text-align: center; font-size: 11px; color: #94a3b8;">
-              <p style="margin: 0;">© 2026 PPO Intern Technologies Private Limited.</p>
+              <p style="margin: 0;">© ${new Date().getFullYear()} ${companyName}. All rights reserved.</p>
             </div>
           </div>
         `
@@ -270,7 +305,7 @@ app.get('/api/health', (req, res) => {
 
 export default app;
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.VITE_DEV_MIDDLEWARE) {
   app.listen(PORT, () => {
     console.log(`Backend server listening on port ${PORT}`);
   });

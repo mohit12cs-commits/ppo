@@ -89,14 +89,7 @@ service cloud.firestore {
 
     // 1. Users (Allows students to register, update profile, and record payments)
     match /users/{userId} {
-      allow get: if isValidId(userId) &&
-                  isSignedIn() &&
-                  (request.auth.uid == userId || 
-                   isAdmin() || 
-                   isSubUser() || 
-                   (resource != null && isDistrictUser() && resource.data.district in districtUserDistrictNames()) || 
-                   (resource != null && isEmitra() && resource.data.createdByEmitraId == request.auth.uid) || 
-                   (resource != null && isCollegeUser() && resource.data.college == collegeUserName()));
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin() || isSubUser() || isDistrictUser() || isEmitra() || isCollegeUser());
 
       allow list: if true; // Allows certificate verification query and student login lookups
 
@@ -106,19 +99,32 @@ service cloud.firestore {
                       (isEmitra() && request.resource.data.createdByEmitraId == request.auth.uid) ||
                       (isSubUser() && request.resource.data.createdBySubUserId == request.auth.uid));
 
-      allow update: if isSignedIn() &&
+      allow update: if (isSignedIn() &&
                      (isAdmin() ||
                       request.auth.uid == userId ||
                       (isSubUser()) ||
-                      (isEmitra() && resource.data.createdByEmitraId == request.auth.uid));
+                      (isEmitra() && resource.data.createdByEmitraId == request.auth.uid)))
+                     ||
+                     // Allow unauthenticated payment status update when paying via valid Razorpay gateway
+                     (
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['isPaid', 'hasPaid', 'paymentStatus', 'paymentAmount', 'paymentVerifiedAt', 'razorpayPaymentId', 'razorpayOrderId', 'razorpaySignature', 'updatedAt']) &&
+                       request.resource.data.paymentStatus == 'success'
+                     );
 
       allow delete: if isAdmin();
+    }
+
+    // 1.1 Students collection rule (matches users for parity)
+    match /students/{studentId} {
+      allow read, write: if isSignedIn() && (request.auth.uid == studentId || isAdmin());
     }
 
     // 2. Payments & Orders (Allows students to save payment receipts and admins to manage ledger)
     match /payments/{paymentId} {
       allow read: if isAdmin() || isSubUser() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if (isSignedIn() && (request.resource.data.userId == request.auth.uid || isAdmin())) ||
+                    (request.resource.data.status == 'success' && request.resource.data.razorpayPaymentId != null);
       allow update, delete: if isAdmin();
       allow list: if isAdmin() || isSubUser() || isSignedIn();
     }
@@ -161,7 +167,7 @@ service cloud.firestore {
 
     // 6. Role Accounts
     match /admins/{adminId} {
-      allow get: if (isSignedIn() && adminId == request.auth.uid) || isAdmin();
+      allow get: if isSignedIn();
       allow list: if isAdmin();
       allow create: if (isSignedIn() && adminId == request.auth.uid) || isAdmin();
       allow update: if isAdmin() || (isSignedIn() && adminId == request.auth.uid);

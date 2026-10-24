@@ -33,6 +33,8 @@ export default function Payment() {
   const emailParam = searchParams.get('email');
   const [unauthedStudent, setUnauthedStudent] = useState<any>(null);
 
+  const student = profile || unauthedStudent;
+
   // If already paid, redirect straight to student dashboard
   useEffect(() => {
     if (authLoading) return;
@@ -40,10 +42,10 @@ export default function Payment() {
       navigate('/login', { replace: true });
       return;
     }
-    if (profile?.isPaid || profile?.hasPaid || profile?.paymentStatus === 'success') {
+    if (student?.isPaid || student?.hasPaid || student?.paymentStatus === 'success') {
       navigate('/dashboard', { replace: true });
     }
-  }, [user, profile, emailParam, authLoading, navigate]);
+  }, [user, student, emailParam, authLoading, navigate]);
 
   // Load unauthenticated student profile if emailParam provided
   useEffect(() => {
@@ -68,32 +70,50 @@ export default function Payment() {
     loadStudentByEmail();
   }, [user, emailParam]);
 
-  // Fetch college-specific dynamic fee
+  // Fetch college-specific dynamic fee (supports custom amounts like ₹1 or ₹1,000)
   useEffect(() => {
     async function fetchCollegeFee() {
-      if (!profile?.college) {
-        setFee(1000);
-        setLoadingFee(false);
-        return;
-      }
-
       try {
-        const collegesRef = collection(db, 'colleges');
-        const q = query(collegesRef, where('name', '==', profile.college));
-        const snap = await getDocs(q);
+        const cleanCollege = (student?.college || '').trim().toLowerCase();
+        let collegeFee: number | null = null;
 
-        if (!snap.empty) {
-          const colData = snap.docs[0].data();
-          if (typeof colData.price === 'number' && colData.price > 0) {
-            setFee(colData.price);
-            setLoadingFee(false);
-            return;
+        // 1. Check dynamic college fee from Firestore colleges collection
+        if (cleanCollege) {
+          const collegesRef = collection(db, 'colleges');
+          const snap = await getDocs(collegesRef);
+
+          if (!snap.empty) {
+            const match = snap.docs.find(d => {
+              const data = d.data();
+              return (data.name || '').trim().toLowerCase() === cleanCollege;
+            });
+
+            if (match) {
+              const p = Number(match.data().price);
+              if (!isNaN(p) && p >= 1) {
+                collegeFee = p;
+              }
+            }
           }
         }
 
-        // Fallback to static list
-        const found = INITIAL_COLLEGES.find(c => c.name.toLowerCase() === profile.college?.toLowerCase());
-        setFee(found?.price || 1000);
+        if (collegeFee !== null) {
+          setFee(collegeFee);
+          setLoadingFee(false);
+          return;
+        }
+
+        // 2. If college not found in Firestore or has no price, use student.paymentAmount
+        if (student?.paymentAmount && Number(student.paymentAmount) >= 1) {
+          setFee(Number(student.paymentAmount));
+          setLoadingFee(false);
+          return;
+        }
+
+        // 3. Fallback to initial constants list
+        const found = INITIAL_COLLEGES.find(c => c.name.toLowerCase() === cleanCollege);
+        const p = found?.price !== undefined ? Number(found.price) : 1000;
+        setFee(!isNaN(p) && p >= 1 ? p : 1000);
       } catch (err) {
         console.warn('Error fetching dynamic college fee:', err);
         setFee(1000);
@@ -102,41 +122,44 @@ export default function Payment() {
       }
     }
 
-    fetchCollegeFee();
-  }, [profile?.college]);
+    if (student) {
+      fetchCollegeFee();
+    }
+  }, [student?.college, student?.paymentAmount]);
 
   const handlePayment = () => {
-    if (!user || !profile) return;
+    if (!student) return;
     setError(null);
     setProcessing(true);
 
+    const targetUid = user?.uid || student.uid;
     const amountInPaise = fee * 100;
 
     openRazorpayCheckout({
       amount: amountInPaise,
-      name: 'PPO Intern',
-      description: `NEP-2020 Internship Fee - ${profile.college || 'College'}`,
+      name: 'Patliputra University (PPU)',
+      description: `PPU NEP-2020 Internship Fee - ${student.college || 'Patliputra University'}`,
       prefill: {
-        name: profile.fullName || '',
-        email: profile.email || '',
-        contact: profile.contactNumber || ''
+        name: student.fullName || '',
+        email: student.email || '',
+        contact: student.contactNumber || ''
       },
       notes: {
-        userId: user.uid,
-        college: profile.college || '',
-        rollNo: profile.universityRoll || '',
-        domain: profile.internshipDomain || ''
+        userId: targetUid,
+        college: student.college || '',
+        rollNo: student.universityRoll || '',
+        domain: student.internshipDomain || ''
       },
       theme: {
         color: '#4f46e5'
       },
       onSuccess: async (response) => {
         try {
-          const userRef = doc(db, 'users', user.uid);
+          const userRef = doc(db, 'users', targetUid);
           const nowIso = new Date().toISOString();
 
-          // 1. Update user payment status in Firestore
-          await updateDoc(userRef, {
+          // 1. Update user payment status in Firestore (clean merge)
+          await setDoc(userRef, {
             isPaid: true,
             hasPaid: true,
             paymentStatus: 'success',
@@ -146,16 +169,16 @@ export default function Payment() {
             razorpayOrderId: response.razorpay_order_id,
             razorpaySignature: response.razorpay_signature,
             updatedAt: nowIso
-          });
+          }, { merge: true });
 
           // 2. Record payment in 'payments' collection
           const paymentDocRef = doc(db, 'payments', response.razorpay_payment_id);
           await setDoc(paymentDocRef, {
             id: response.razorpay_payment_id,
-            userId: user.uid,
-            studentName: profile.fullName || '',
-            studentEmail: profile.email || '',
-            college: profile.college || '',
+            userId: targetUid,
+            studentName: student.fullName || '',
+            studentEmail: student.email || '',
+            college: student.college || '',
             razorpayOrderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
             amount: fee,
@@ -163,11 +186,15 @@ export default function Payment() {
             currency: 'INR',
             status: 'success',
             timestamp: nowIso
-          });
+          }, { merge: true });
 
-          // 3. Refresh context and redirect to dashboard
-          await refreshProfile();
-          navigate('/dashboard', { replace: true });
+          // 3. Refresh context and redirect to dashboard or login
+          if (user) {
+            await refreshProfile();
+            navigate('/dashboard', { replace: true });
+          } else {
+            navigate('/login?paid=true', { replace: true });
+          }
         } catch (err: any) {
           console.error('Error saving payment record:', err);
           setError('Payment succeeded but profile update failed. Please refresh or contact support.');
@@ -180,58 +207,6 @@ export default function Payment() {
         setProcessing(false);
       }
     });
-  };
-
-  // Instant demo payment approval for testing
-  const handleInstantApprove = async () => {
-    if (!user || !profile) return;
-    setError(null);
-    setProcessing(true);
-
-    try {
-      const nowIso = new Date().toISOString();
-      const paymentId = `pay_demo_${Date.now()}`;
-      const orderId = `order_demo_${Date.now()}`;
-      const amountInPaise = fee * 100;
-
-      // 1. Update user profile
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        isPaid: true,
-        hasPaid: true,
-        paymentStatus: 'success',
-        paymentAmount: fee,
-        paymentVerifiedAt: nowIso,
-        razorpayPaymentId: paymentId,
-        razorpayOrderId: orderId,
-        updatedAt: nowIso
-      });
-
-      // 2. Create payment record in 'payments'
-      const payDocRef = doc(db, 'payments', paymentId);
-      await setDoc(payDocRef, {
-        id: paymentId,
-        userId: user.uid,
-        studentName: profile.fullName || '',
-        studentEmail: profile.email || '',
-        college: profile.college || '',
-        razorpayOrderId: orderId,
-        razorpayPaymentId: paymentId,
-        amount: fee,
-        amountPaise: amountInPaise,
-        currency: 'INR',
-        status: 'success',
-        timestamp: nowIso
-      });
-
-      // 3. Refresh context and navigate to student dashboard
-      await refreshProfile();
-      navigate('/dashboard', { replace: true });
-    } catch (err: any) {
-      console.error('Instant payment error:', err);
-      setError('Error approving demo payment: ' + (err.message || 'Unknown error'));
-      setProcessing(false);
-    }
   };
 
   return (
@@ -273,10 +248,10 @@ export default function Payment() {
               </div>
               <div>
                 <h3 className="text-base font-extrabold text-slate-900">
-                  {profile?.fullName || 'Student Candidate'}
+                  {student?.fullName || 'Student Candidate'}
                 </h3>
                 <p className="text-xs text-slate-500 font-medium">
-                  {profile?.email} • {profile?.contactNumber}
+                  {student?.email} • {student?.contactNumber}
                 </p>
               </div>
             </div>
@@ -286,7 +261,7 @@ export default function Payment() {
                 <span className="text-slate-400 font-bold uppercase tracking-wider block text-[10px]">Affiliated College</span>
                 <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
                   <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  {profile?.college || 'N/A'}
+                  {student?.college || 'N/A'}
                 </span>
               </div>
 
@@ -294,7 +269,7 @@ export default function Payment() {
                 <span className="text-slate-400 font-bold uppercase tracking-wider block text-[10px]">University Reg No.</span>
                 <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
                   <GraduationCap className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
-                  {profile?.universityRoll || profile?.universityRollNo || 'N/A'}
+                  {student?.universityRoll || student?.universityRollNo || 'N/A'}
                 </span>
               </div>
             </div>
@@ -340,16 +315,6 @@ export default function Payment() {
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
-            </button>
-
-            {/* Demo / Sandbox bypass button */}
-            <button
-              onClick={handleInstantApprove}
-              disabled={processing || loadingFee}
-              className="w-full py-3 px-4 rounded-xl border border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2"
-            >
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Instant Test Activation (Auto-Approve Demo)</span>
             </button>
           </div>
 

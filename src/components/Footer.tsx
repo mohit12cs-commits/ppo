@@ -25,15 +25,15 @@ export const Footer: React.FC = () => {
               </div>
               <div>
                 <span className="text-xl font-black tracking-tight text-slate-900 font-heading">
-                  PPO<span className="text-indigo-600">Intern</span>
+                  PPU<span className="text-indigo-600">Intern</span>
                 </span>
                 <span className="ml-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  NEP 2020
+                  PPU • NEP 2020
                 </span>
               </div>
             </Link>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-sm font-medium">
-              Empowering students across India with accredited 120-hour internships, industry-aligned capstone modules, and verifiable credentials compliant with NEP-2020 & AICTE guidelines.
+              Empowering Patliputra University (PPU) students with accredited 120-hour internships, industry-aligned capstone modules, and verifiable credentials compliant with NEP-2020 & UGC guidelines.
             </p>
             <div className="flex items-center gap-2 pt-1">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -123,7 +123,7 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                <span>support@ppointern.com</span>
+                <span>support@ppuintern.in</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Clock className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
@@ -131,7 +131,7 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                <span>Tech Hub Park, Sector 62, Noida, UP</span>
+                <span>Patliputra University Campus, Kankarbagh Road, Patna, Bihar</span>
               </li>
             </ul>
           </div>
@@ -139,7 +139,7 @@ export const Footer: React.FC = () => {
 
         {/* Legal and Disclaimer Bar */}
         <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
-          <p>© {new Date().getFullYear()} PPO Intern Portal. All rights reserved. NEP-2020 Aligned.</p>
+          <p>© {new Date().getFullYear()} Patliputra University (PPU) Internship Portal. All rights reserved. NEP-2020 Aligned.</p>
           <div className="flex items-center gap-6">
             <Link to="/privacy" className="hover:text-indigo-600 transition-colors">
               Privacy Policy

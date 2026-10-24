@@ -93,7 +93,7 @@ export const About: React.FC = () => {
                 Empowering India's Next Generation of Skilled Engineers & Leaders
               </h1>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium">
-                PPO Intern is a dedicated pre-placement internship gateway created to bridge the critical gap between university curricula and real industry expectations through certified 120-hour programs aligned with NEP-2020.
+                Patliputra University (PPU) Internship Portal is a dedicated pre-placement gateway created to bridge the critical gap between university curricula and real industry expectations through certified 120-hour programs aligned with NEP-2020.
               </p>
 
               {/* Stats Grid */}
@@ -190,7 +190,7 @@ export const About: React.FC = () => {
                   Guided by Experienced Industry Practitioners
                 </h3>
                 <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                  At PPO Intern, students are not left alone with video recordings. Every cohort is assigned technical mentors who conduct live code reviews, debug challenging problems, and impart professional design standards used at top software product companies.
+                  At Patliputra University (PPU) Internship Portal, students are not left alone with video recordings. Every cohort is assigned technical mentors who conduct live code reviews, debug challenging problems, and impart professional design standards used at top software product companies.
                 </p>
 
                 <div className="space-y-2.5 pt-2 text-xs font-bold text-slate-700">

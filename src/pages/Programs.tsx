@@ -195,12 +195,12 @@ export const Programs: React.FC = () => {
           </div>
 
           {/* Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-10 no-scrollbar">
+          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                   selectedCategory === cat
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
                     : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
@@ -340,7 +340,7 @@ export const Programs: React.FC = () => {
               to="/register"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-black text-sm uppercase tracking-wider shadow-xl transition cursor-pointer"
             >
-              <span>Enroll Now</span>
+              <span>Register</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

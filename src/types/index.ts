@@ -152,6 +152,18 @@ export interface PaymentRecord {
   verifiedBy?: string;
 }
 
+export interface RazorpaySettings {
+  keyId: string;
+  keySecret?: string;
+  mode: 'live' | 'test';
+  enabled: boolean;
+  accountName: string;
+  description: string;
+  themeColor: string;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
 export interface SiteSettings {
   contactPhone: string;
   contactEmail: string;
@@ -171,6 +183,7 @@ export interface SiteSettings {
     rating: number;
     avatarUrl?: string;
   }[];
+  razorpay?: RazorpaySettings;
 }
 
 export interface InternshipTrack {

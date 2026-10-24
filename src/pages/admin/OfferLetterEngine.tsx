@@ -22,7 +22,7 @@ import {
   ToggleRight
 } from 'lucide-react';
 
-const DEFAULT_TEMPLATE_BODY = `We are pleased to accept your application and formally offer you an internship at PPO Intern Technologies Private Limited (PPO Intern). Our internship programmes are designed in full alignment with NEP-2020, AICTE and UGC Internship Guidelines, and your university's specific internship framework.`;
+const DEFAULT_TEMPLATE_BODY = `We are pleased to accept your application and formally offer you an internship under the Patliputra University (PPU) Technical Internship Council. Our internship programmes are designed in full alignment with NEP-2020, AICTE and UGC Internship Guidelines, and Patliputra University's specific academic framework.`;
 
 const PLACEHOLDERS = [
   { tag: '{{student_name}}', label: 'Student Name' },
@@ -46,8 +46,8 @@ export default function OfferLetterEngine() {
   const [editingTemplate, setEditingTemplate] = useState<OfferLetterTemplate | null>(null);
   const [templateForm, setTemplateForm] = useState<OfferLetterTemplate>({
     id: '',
-    templateName: 'Standard NEP-2020 Template',
-    companyName: 'PPO Intern Technologies Private Limited',
+    templateName: 'Standard PPU NEP-2020 Template',
+    companyName: 'Patliputra University (PPU) Technical Internship Council',
     signatoryName: 'Authorized Signatory',
     signatoryRole: 'Head of Academic Partnerships',
     headerImageUrl: '/images/offer_letter_header.png',
@@ -85,8 +85,8 @@ export default function OfferLetterEngine() {
         // Initial Template baseline
         const baseTemplate: OfferLetterTemplate = {
           id: 'template_default',
-          templateName: 'NEP-2020 Standard Template (Default)',
-          companyName: 'PPO Intern Technologies Private Limited',
+          templateName: 'PPU NEP-2020 Standard Template (Default)',
+          companyName: 'Patliputra University (PPU) Technical Internship Council',
           signatoryName: 'Authorized Signatory',
           signatoryRole: 'Head of Academic Partnerships',
           headerImageUrl: '/images/offer_letter_header.png',

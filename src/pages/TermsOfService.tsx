@@ -23,7 +23,7 @@ export const TermsOfService: React.FC = () => {
           <div>
             <h2 className="text-base font-bold text-slate-900 mb-2">1. Acceptance of Terms</h2>
             <p>
-              By enrolling in an internship track or accessing the PPO Intern portal, you agree to adhere to these Terms of Service, academic code of conduct, and university evaluation rules.
+              By enrolling in an internship track or accessing the Patliputra University (PPU) Internship portal, you agree to adhere to these Terms of Service, academic code of conduct, and university evaluation rules.
             </p>
           </div>
 
@@ -37,14 +37,14 @@ export const TermsOfService: React.FC = () => {
           <div>
             <h2 className="text-base font-bold text-slate-900 mb-2">3. College-Specific Fees & Refunds</h2>
             <p>
-              Registration fees vary dynamically based on institutional MoUs signed between colleges and PPO Intern. Payments completed via Razorpay are confirmed with an instant digital receipt. Refunds are governed by academic batch cancellation guidelines prior to capstone mentor allocation.
+              Registration fees vary dynamically based on institutional MoUs signed between colleges and Patliputra University (PPU). Payments completed via Razorpay are confirmed with an instant digital receipt. Refunds are governed by academic batch cancellation guidelines prior to capstone mentor allocation.
             </p>
           </div>
 
           <div>
             <h2 className="text-base font-bold text-slate-900 mb-2">4. Digital Credential Verification</h2>
             <p>
-              Offer Letters and Completion Certificates issued by PPO Intern carry cryptographic QR codes for institutional validation. Tampering with digital PDF certificates is strictly prohibited by law.
+              Offer Letters and Completion Certificates issued by Patliputra University (PPU) Internship Portal carry cryptographic QR codes for institutional validation. Tampering with digital PDF certificates is strictly prohibited by law.
             </p>
           </div>
         </div>

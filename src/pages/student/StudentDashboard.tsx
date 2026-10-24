@@ -532,7 +532,7 @@ export default function StudentDashboard() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl my-8 relative text-left"
+              className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-white border border-slate-200 rounded-3xl p-5 sm:p-8 shadow-2xl my-auto relative text-left"
             >
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
                 <div>
